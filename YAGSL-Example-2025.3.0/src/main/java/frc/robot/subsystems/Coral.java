@@ -11,9 +11,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 // import au.grapplerobotics.LaserCan;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
+//import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+//import frc.robot.Constants;
 import frc.robot.Constants.Shooter;
 // import frc.robot.simulation.SimulatableCANSparkMax;
 // import frc.robot.subsystems.leds.LEDs;
@@ -56,8 +56,8 @@ public class Coral extends SubsystemBase {
 
     mLeftMotor = new SparkMax(Shooter.LeftMotorId, MotorType.kBrushless);
     mRightMotor = new SparkMax(Shooter.RightMotorId, MotorType.kBrushless);
-    ForBeam = new DigitalInput(0);
-    BackBeam = new DigitalInput(1);
+    ForBeam = new DigitalInput(3);
+    BackBeam = new DigitalInput(4);
 
     SparkMaxConfig coralConfig = new SparkMaxConfig();
 
@@ -138,19 +138,39 @@ public class Coral extends SubsystemBase {
   /*---------------------------------- Custom Public Functions ----------------------------------*/
 
   public boolean isHoldingCoral() {
-    return ForBeam.get();
+    return ForBeam.get() && !BackBeam.get();
   }
 
+  // Returns true if the forbream detects a coral and the backbeam does not. 
+  // If the backbeam is blocked, the coral is not ready because it is to far in the shooter.
+  /*
+  Returns the following boolean values:
+  true - Coral is ready (forbeam detects a coral and backbeam does not)
+  false - Coral is not ready (forbeam does not detect a coral, but backbeam does. Coral is to far in the shooter) 
+       OR (forbeam and backbeam both detect a coral)   
+  */ 
+  public boolean isCoralReady() {
+    if(ForBeam.get() && !BackBeam.get()) {
+      return true;
+    }
+    else {
+      return false;
+    }
+   // return ForBeam.get() && !BackBeam.get();
+  }
   public void setSpeed(double rpm) {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = rpm;
   }
 
   public void intake() {
+    if(isCoralReady()) {
+      return; // we don't need intake if the coral is ready
+    }
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Shooter.IntakeSpeed;
     mPeriodicIO.state = IntakeState.INTAKE;
-
+   
     // m_leds.setColor(Color.kYellow);
   }
 
@@ -169,12 +189,18 @@ public class Coral extends SubsystemBase {
   }
 
   public void scoreL1() {
+    if(!isCoralReady()) {
+      return; // we can't score if the coral is not ready
+    }
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Shooter.L1Speed;
     mPeriodicIO.state = IntakeState.SCORE;
   }
 
   public void scoreL24() {
+    if(!isCoralReady()) {
+      return; // we can't score if the coral is not ready
+    }
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Shooter.L24Speed;
     mPeriodicIO.state = IntakeState.SCORE;
