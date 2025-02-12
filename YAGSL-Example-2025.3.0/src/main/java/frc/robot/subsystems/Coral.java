@@ -7,10 +7,12 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 // import au.grapplerobotics.ConfigurationFailedException;
 // import au.grapplerobotics.LaserCan;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import frc.robot.Constants;
@@ -49,8 +51,13 @@ public class Coral extends SubsystemBase {
    private DigitalInput BackBeam;
   // private LaserCan mLaserCAN;
 
-  private Coral() {
+  public intakeCoral intakeCoral;
+  public scoreL1 scoreL1;
+  public scoreL24 scoreL24;
+
+  public Coral() {
     super("Coral");
+    intakeCoral = new intakeCoral();
 
     mPeriodicIO = new PeriodicIO();
 
@@ -134,7 +141,96 @@ public class Coral extends SubsystemBase {
   public void reset() {
     stopCoral();
   }
+public class intakeCoral extends Command {
+  public  intakeCoral() {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(Coral.getInstance());
+  }
 
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+       // Coral.getInstance().intake();
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    Coral.getInstance().intake();
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    Coral.getInstance().stopCoral();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return Coral.getInstance().isHoldingCoral();
+  }
+}
+public class scoreL1 extends Command {
+  public scoreL1() {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(Coral.getInstance());
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+       // Coral.getInstance().intake();
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    Coral.getInstance().scoreL1();
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    this.isFinished();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
+}
+public class scoreL24 extends Command {
+  public scoreL24() {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(Coral.getInstance());
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+       // Coral.getInstance().intake();
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    Coral.getInstance().scoreL24();
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    this.isFinished();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
+}
   /*---------------------------------- Custom Public Functions ----------------------------------*/
 
   public boolean isHoldingCoral() {
