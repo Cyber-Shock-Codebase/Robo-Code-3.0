@@ -31,6 +31,7 @@ import frc.robot.subsystems.Coral.scoreL1;
  */
 public class RobotContainer
 {
+  Coral coral = new Coral();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
@@ -147,6 +148,8 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.runOnce(coral::scoreL1));
     } else
     {
+      Coral coral = new Coral();
+
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       driverXbox.b().whileTrue(
@@ -155,8 +158,8 @@ public class RobotContainer
                               );
       driverXbox.start().whileTrue(Commands.runOnce(elevatorsub::homeElevator));
       driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
+      driverXbox.leftBumper().onTrue(Commands.runOnce(elevatorsub::GoToIntakePos).andThen(Commands.runOnce(coral::intake)));
+      driverXbox.rightBumper().onTrue(Commands.runOnce(elevatorsub::GoToL1).andThen(coral::scoreL1));
     }
 
   }
