@@ -431,7 +431,7 @@ public class SwerveModule
     // SwerveModuleState optimization might be desired to be disabled while debugging.
     if (optimizeSwerveModuleState)
     {
-      desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
+      desiredState.optimize(Rotation2d.fromDegrees(getRelativePosition()));
     }
 
     // If we are forcing the angle

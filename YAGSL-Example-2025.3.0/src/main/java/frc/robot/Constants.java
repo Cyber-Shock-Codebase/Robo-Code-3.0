@@ -58,35 +58,38 @@ public final class Constants
    //countsper inch = (360 * gear ratio)/(diamiter of sprocket * pi) 
     public static final double countsPerInch = (360 * 45 )/(2* 3.14159265359);
     
-    public static final double downPos = 20;
-    public static final double L1 = 20;
-    public static final double L2 = 20;
+    public static final double downPos = .1;
+    public static final double L1 = 7.25;
+    public static final double L2 = 23;
     public static final double L3 = 20;
     public static final double L4 = 20;
-    public static final double bottomPos = 10;
+    public static final double bottomPos = 0;
     
     public static final double minPos = 0;
-    public static final double maxPos = 10;
-    public static final double posTolerance = .5;
+    public static final double maxPos = 24;
+    public static final double posTolerance = .25;
 
-    public static final double maxVelocity = 3.5;
-    public static final double maxAcceleration = 2.5;
+    public static final double maxVelocity = 0.5;
+    public static final double maxAcceleration = 0.5;
 
     public static final int kP = 0;
     public static final int kI = 0;
     public static final int kD = 0;
 
-    public static final int kS = 10;
-    public static final int kG = 10;
-    public static final int kV = 10;
+    public static final int kS = 0;
+    public static final int kG = 0;
+    public static final int kV = 0;
 
-    public static final double max_output = 10;
+    public static final double max_output = 5;
   
   }
 
   public static final class Shooter{
     public static final int RightMotorId = 21;
     public static final int LeftMotorId = 22;
+
+    public static final int ForBeamID = 3;
+    public static final int BackBeamID = 4;
 
     public static final double IntakeSpeed = 20;
     public static final double ReverseSpeed = 20;
