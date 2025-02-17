@@ -226,4 +226,13 @@ public class Elevator extends SubsystemBase {
         
         primaryMotor.set(MathUtil.clamp(power, -ElevatorConstants.max_output, ElevatorConstants.max_output));
     }
+
+    public void GoToL1() {
+        setPositionInches(ElevatorConstants.L1);
+        currentTarget = ElevatorPosition.POSITION_1;
+    }
+    public void GoToIntakePos() {
+        setPositionInches(ElevatorConstants.L1);
+        currentTarget = ElevatorPosition.DOWN;
+    }
 }
