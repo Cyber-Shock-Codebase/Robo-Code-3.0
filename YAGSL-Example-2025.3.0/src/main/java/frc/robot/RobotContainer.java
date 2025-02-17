@@ -143,13 +143,10 @@ public class RobotContainer
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
       driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      Coral coral = new Coral();
       driverXbox.leftBumper().onTrue(Commands.runOnce(coral::intake));
       driverXbox.rightBumper().onTrue(Commands.runOnce(coral::scoreL1));
     } else
     {
-      Coral coral = new Coral();
-
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       driverXbox.b().whileTrue(

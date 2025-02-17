@@ -63,8 +63,8 @@ public class Coral extends SubsystemBase {
 
     mLeftMotor = new SparkMax(Shooter.LeftMotorId, MotorType.kBrushless);
     mRightMotor = new SparkMax(Shooter.RightMotorId, MotorType.kBrushless);
-    ForBeam = new DigitalInput(3);
-    BackBeam = new DigitalInput(4);
+    ForBeam = new DigitalInput(Shooter.ForBeamID);
+    BackBeam = new DigitalInput(Shooter.BackBeamID);
 
     SparkMaxConfig coralConfig = new SparkMaxConfig();
 
