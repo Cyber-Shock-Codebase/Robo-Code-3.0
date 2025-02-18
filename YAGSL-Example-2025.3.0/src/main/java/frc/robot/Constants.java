@@ -64,7 +64,7 @@ public final class Constants
     public static final double L3 = 20;
     public static final double L4 = 20;
     public static final double bottomPos = 10;
-    
+   
     public static final double minPos = 0;
     public static final double maxPos = 10;
     public static final double posTolerance = .5;
@@ -83,7 +83,7 @@ public final class Constants
     public static final double max_output = 10;
   
   }
-
+// Shooter constants
   public static final class Shooter{
     public static final int RightMotorId = 21;
     public static final int LeftMotorId = 22;
