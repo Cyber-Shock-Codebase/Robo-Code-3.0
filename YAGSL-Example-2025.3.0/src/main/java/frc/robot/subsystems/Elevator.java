@@ -204,6 +204,26 @@ public class Elevator extends SubsystemBase {
                Math.abs(getHeightInches() - position.positionInches) < 0.5;
     }
 
+    public boolean isAtDOWN() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.downPos) < 0.5;
+    }
+
+    public boolean isAtL1() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.L1) < 0.5;
+    }
+    
+    public boolean isAtL2() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.L2) < 0.5;
+    }
+    
+    public boolean isAtL3() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.L3) < 0.5;
+    }
+
     public boolean isHomed() {
         return isHomed;
     }
@@ -241,6 +261,17 @@ public class Elevator extends SubsystemBase {
         setPositionInches(ElevatorConstants.L1);
         currentTarget = ElevatorPosition.POSITION_1;
     }
+
+    public void GoToL2() {
+        setPositionInches(ElevatorConstants.L2);
+        currentTarget = ElevatorPosition.POSITION_2;
+    }
+
+    public void GoToL3() {
+        setPositionInches(ElevatorConstants.L3);
+        currentTarget = ElevatorPosition.POSITION_3;
+    }
+    
     public void GoToIntakePos() {
         setPositionInches(ElevatorConstants.L1);
         currentTarget = ElevatorPosition.DOWN;
