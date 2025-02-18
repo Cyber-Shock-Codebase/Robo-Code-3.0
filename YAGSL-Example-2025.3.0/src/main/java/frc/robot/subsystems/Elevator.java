@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.Coral;
 
 public class Elevator extends SubsystemBase {
     private final SparkMax primaryMotor;
@@ -109,8 +110,8 @@ public class Elevator extends SubsystemBase {
             stopMotors();
         }
 
-        // Only run control if homed
-        if (isHomed) {
+        // Only run control if homed and Coral is not in the way
+        if (isHomed && !Coral.getInstance().isCoralproblematic()) {
             double pidOutput = pidController.calculate(getHeightInches(), currentState.position);
             double ff = calculateFeedForward(currentState);
             
@@ -159,6 +160,11 @@ public class Elevator extends SubsystemBase {
     public void setPositionInches(double inches) {
         if (!isHomed && inches > 0) {
             System.out.println("Warning: Elevator not homed! Home first before moving to positions.");
+            return;
+        }
+
+        if (Coral.getInstance().isCoralproblematic()) {
+            System.out.println("Warning: Coral is in the way of the elevator!");
             return;
         }
 
@@ -221,6 +227,10 @@ public class Elevator extends SubsystemBase {
         }
         
         if (bottomLimit.get() && power < 0) {
+            power = 0;
+        }
+        // Stop elevator if Coral is in the way of elevatior
+        if (!Coral.getInstance().isCoralproblematic()) {
             power = 0;
         }
         
