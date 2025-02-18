@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.Coral;
 
 public class Elevator extends SubsystemBase {
     private final SparkMax primaryMotor;
@@ -109,8 +110,8 @@ public class Elevator extends SubsystemBase {
             stopMotors();
         }
 
-        // Only run control if homed
-        if (isHomed) {
+        // Only run control if homed and Coral is not in the way
+        if (isHomed && !Coral.getInstance().isCoralproblematic()) {
             double pidOutput = pidController.calculate(getHeightInches(), currentState.position);
             double ff = calculateFeedForward(currentState);
             
@@ -162,6 +163,11 @@ public class Elevator extends SubsystemBase {
             return;
         }
 
+        if (Coral.getInstance().isCoralproblematic()) {
+            System.out.println("Warning: Coral is in the way of the elevator!");
+            return;
+        }
+
         setpoint = MathUtil.clamp(
             inches,
             ElevatorConstants.minPos,
@@ -198,6 +204,26 @@ public class Elevator extends SubsystemBase {
                Math.abs(getHeightInches() - position.positionInches) < 0.5;
     }
 
+    public boolean isAtDOWN() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.downPos) < 0.5;
+    }
+
+    public boolean isAtL1() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.L1) < 0.5;
+    }
+    
+    public boolean isAtL2() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.L2) < 0.5;
+    }
+    
+    public boolean isAtL3() {
+        return pidController.atSetpoint() && 
+               Math.abs(getHeightInches() - ElevatorConstants.L3) < 0.5;
+    }
+
     public boolean isHomed() {
         return isHomed;
     }
@@ -223,7 +249,31 @@ public class Elevator extends SubsystemBase {
         if (bottomLimit.get() && power < 0) {
             power = 0;
         }
+        // Stop elevator if Coral is in the way of elevatior
+        if (!Coral.getInstance().isCoralproblematic()) {
+            power = 0;
+        }
         
         primaryMotor.set(MathUtil.clamp(power, -ElevatorConstants.max_output, ElevatorConstants.max_output));
+    }
+
+    public void GoToL1() {
+        setPositionInches(ElevatorConstants.L1);
+        currentTarget = ElevatorPosition.POSITION_1;
+    }
+
+    public void GoToL2() {
+        setPositionInches(ElevatorConstants.L2);
+        currentTarget = ElevatorPosition.POSITION_2;
+    }
+
+    public void GoToL3() {
+        setPositionInches(ElevatorConstants.L3);
+        currentTarget = ElevatorPosition.POSITION_3;
+    }
+    
+    public void GoToIntakePos() {
+        setPositionInches(ElevatorConstants.L1);
+        currentTarget = ElevatorPosition.DOWN;
     }
 }

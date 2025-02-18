@@ -19,7 +19,10 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
+import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Coral.intakeCoral;
+import frc.robot.Constants.ElevatorConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -28,6 +31,7 @@ import frc.robot.subsystems.Elevator;
  */
 public class RobotContainer
 {
+  Coral coral = new Coral();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
@@ -35,7 +39,6 @@ public class RobotContainer
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/maxSwerve"));
   private final Elevator    elevatorsub           = new Elevator();
-
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
@@ -117,6 +120,7 @@ public class RobotContainer
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
 
+
     if (RobotBase.isSimulation())
     {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
@@ -139,8 +143,8 @@ public class RobotContainer
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
       driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().onTrue(Commands.none());
-      driverXbox.rightBumper().onTrue(Commands.none());
+      driverXbox.leftBumper().onTrue(Commands.runOnce(coral::intake));
+      driverXbox.rightBumper().onTrue(Commands.runOnce(coral::scoreL1));
     } else
     {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
@@ -151,8 +155,8 @@ public class RobotContainer
                               );
       driverXbox.start().whileTrue(Commands.runOnce(elevatorsub::homeElevator));
       driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
+      driverXbox.leftBumper().onTrue(Commands.runOnce(elevatorsub::GoToIntakePos).until(elevatorsub::isAtDOWN).andThen(Commands.runOnce(coral::intake)));
+      driverXbox.rightBumper().onTrue(Commands.runOnce(elevatorsub::GoToL2).until(elevatorsub::isAtL2).andThen(coral::scoreL24));
     }
 
   }
@@ -171,5 +175,8 @@ public class RobotContainer
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
+  }
+
+  private void intake() {
   }
 }
