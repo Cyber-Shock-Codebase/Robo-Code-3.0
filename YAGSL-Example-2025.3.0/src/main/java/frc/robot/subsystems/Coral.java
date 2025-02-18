@@ -234,11 +234,15 @@ public class scoreL24 extends Command {
   /*---------------------------------- Custom Public Functions ----------------------------------*/
 
   public boolean isHoldingCoral() {
-    return ForBeam.get() && !BackBeam.get();
+    return !ForBeam.get();
+  }
+
+  public boolean isCoralproblematic() {
+    return !BackBeam.get();
   }
 
   // Returns true if the forbream detects a coral and the backbeam does not. 
-  // If the backbeam is blocked, the coral is not ready because it is to far in the shooter.
+  // If the backbeam is blocked, the coral is not ready because it is not far enough in the shooter.
   /*
   Returns the following boolean values:
   true - Coral is ready (forbeam detects a coral and backbeam does not)
@@ -246,7 +250,8 @@ public class scoreL24 extends Command {
        OR (forbeam and backbeam both detect a coral)   
   */ 
   public boolean isCoralReady() {
-    if(ForBeam.get() && !BackBeam.get()) {
+    if(!ForBeam.get() && BackBeam.get()) {
+      mPeriodicIO.state = IntakeState.READY;
       return true;
     }
     else {

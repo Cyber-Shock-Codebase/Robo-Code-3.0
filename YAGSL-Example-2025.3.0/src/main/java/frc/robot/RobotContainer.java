@@ -22,7 +22,7 @@ import swervelib.SwerveInputStream;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Coral.intakeCoral;
-import frc.robot.subsystems.Coral.scoreL1;
+import frc.robot.Constants.ElevatorConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -155,8 +155,8 @@ public class RobotContainer
                               );
       driverXbox.start().whileTrue(Commands.runOnce(elevatorsub::homeElevator));
       driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().onTrue(Commands.runOnce(elevatorsub::GoToIntakePos).andThen(Commands.runOnce(coral::intake)));
-      driverXbox.rightBumper().onTrue(Commands.runOnce(elevatorsub::GoToL1).andThen(coral::scoreL1));
+      driverXbox.leftBumper().onTrue(Commands.runOnce(elevatorsub::GoToIntakePos).until(elevatorsub::isAtDOWN).andThen(Commands.runOnce(coral::intake)));
+      driverXbox.rightBumper().onTrue(Commands.runOnce(elevatorsub::GoToL2).until(elevatorsub::isAtL2).andThen(coral::scoreL24));
     }
 
   }
