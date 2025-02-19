@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -31,7 +32,7 @@ import frc.robot.Constants.ElevatorConstants;
  */
 public class RobotContainer
 {
-  Coral coral = new Coral();
+  Coral Coral = new Coral();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
@@ -143,8 +144,8 @@ public class RobotContainer
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
       driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().onTrue(Commands.runOnce(coral::intake));
-      driverXbox.rightBumper().onTrue(Commands.runOnce(coral::scoreL1));
+      // driverXbox.leftBumper().onTrue(Commands.runOnce(coral::intake));
+      // driverXbox.rightBumper().onTrue(Commands.runOnce(coral::scoreL1));
     } else
     {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
@@ -155,8 +156,8 @@ public class RobotContainer
                               );
       driverXbox.start().whileTrue(Commands.runOnce(elevatorsub::homeElevator));
       driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().onTrue(Commands.runOnce(elevatorsub::GoToIntakePos).until(elevatorsub::isAtDOWN).andThen(Commands.runOnce(coral::intake)));
-      driverXbox.rightBumper().onTrue(Commands.runOnce(elevatorsub::GoToL2).until(elevatorsub::isAtL2).andThen(coral::scoreL24));
+      driverXbox.leftBumper().onTrue(Commands.runOnce(elevatorsub::GoToIntakePos).until(elevatorsub::isAtDOWN).andThen(Coral::intake));
+      driverXbox.rightBumper().onTrue(Commands.runOnce(elevatorsub::GoToL1).until(elevatorsub::isAtL1).andThen(Coral::scoreL24));
     }
 
   }
@@ -177,6 +178,4 @@ public class RobotContainer
     drivebase.setMotorBrake(brake);
   }
 
-  private void intake() {
-  }
 }

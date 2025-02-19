@@ -51,12 +51,13 @@ public final class Constants
 
   public static final class ElevatorConstants{
     
-    public static final int leftElevatorID = 11;
+    public static final int leftElevatorID = 21;
     public static final int rightElevatorID = 12;
-    public static final int limitSwitchPort = 1;
+    public static final int limitSwitchPort = 0;
+    public static final int toplimitSwitchPort = 1;
 
    //countsper inch = (360 * gear ratio)/(diamiter of sprocket * pi) 
-    public static final double countsPerInch = (360 * 45 )/(2* 3.14159265359);
+    public static final double countsPerInch = (360 * 10 )/(2* 3.14159265359);
     
     public static final double downPos = .1;
     public static final double L1 = 7.25;
@@ -69,24 +70,24 @@ public final class Constants
     public static final double maxPos = 24;
     public static final double posTolerance = .25;
 
-    public static final double maxVelocity = 0.5;
-    public static final double maxAcceleration = 0.5;
+    public static final double maxVelocity = 0.01;
+    public static final double maxAcceleration = 0.01;
 
     public static final int kP = 0;
     public static final int kI = 0;
     public static final int kD = 0;
 
     public static final int kS = 0;
-    public static final int kG = 0;
-    public static final int kV = 0;
+    public static final double kG = 0.036;
+    public static final double kV = 1;
 
     public static final double max_output = 5;
   
   }
 
   public static final class Shooter{
-    public static final int RightMotorId = 21;
-    public static final int LeftMotorId = 22;
+    public static final int RightMotorId = 51;
+    public static final int LeftMotorId = 52;
 
     public static final int ForBeamID = 3;
     public static final int BackBeamID = 4;

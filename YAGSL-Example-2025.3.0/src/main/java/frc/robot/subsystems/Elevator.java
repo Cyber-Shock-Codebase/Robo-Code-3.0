@@ -14,13 +14,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.subsystems.Coral;
 
 public class Elevator extends SubsystemBase {
     private final SparkMax primaryMotor;
     private final SparkMax followerMotor;
     private final RelativeEncoder encoder;
     private final DigitalInput bottomLimit;
+    private final DigitalInput topLimit;
     private final PIDController pidController;
     private final TrapezoidProfile.Constraints constraints;
     private TrapezoidProfile.State goalState;
@@ -60,6 +60,7 @@ public class Elevator extends SubsystemBase {
         
         encoder = primaryMotor.getEncoder();
         bottomLimit = new DigitalInput(ElevatorConstants.limitSwitchPort);
+        topLimit = new DigitalInput(ElevatorConstants.toplimitSwitchPort);
 
         resetConfig.idleMode(IdleMode.kBrake);
         resetConfig.smartCurrentLimit(40);
@@ -104,6 +105,10 @@ public class Elevator extends SubsystemBase {
 
         if (bottomLimit.get()) {
             handleBottomLimit();
+        }
+
+        if (topLimit.get()) {
+            stopMotors();
         }
 
         if (getHeightInches() > ElevatorConstants.maxPos) {
@@ -192,10 +197,12 @@ public class Elevator extends SubsystemBase {
     }
 
     public void homeElevator() {
-        primaryMotor.set(-0.1); // Slow downward movement until bottom limit is hit
+        primaryMotor.set(-0.01); // Slow downward movement until bottom limit is hit
         System.out.println("yay");
         if (bottomLimit.get()) {
             handleBottomLimit();
+        } else {
+            isHomed = false;
         }
     }
 
@@ -249,6 +256,10 @@ public class Elevator extends SubsystemBase {
         if (bottomLimit.get() && power < 0) {
             power = 0;
         }
+
+        if (topLimit.get() && power < 0) {
+            power = 0;
+        }
         // Stop elevator if Coral is in the way of elevatior
         if (!Coral.getInstance().isCoralproblematic()) {
             power = 0;
@@ -257,23 +268,34 @@ public class Elevator extends SubsystemBase {
         primaryMotor.set(MathUtil.clamp(power, -ElevatorConstants.max_output, ElevatorConstants.max_output));
     }
 
+    // public void GoToL1() {
+    //     goalState = new TrapezoidProfile.State(ElevatorConstants.L1, 0);
+    //     setManualPower(0.5);
+    //     currentTarget = ElevatorPosition.POSITION_1;
+    //     System.out.println("L1");
+    // }
+
     public void GoToL1() {
         setPositionInches(ElevatorConstants.L1);
         currentTarget = ElevatorPosition.POSITION_1;
+        System.out.println("L1");
     }
 
     public void GoToL2() {
         setPositionInches(ElevatorConstants.L2);
         currentTarget = ElevatorPosition.POSITION_2;
+        System.out.println("L2");
     }
 
     public void GoToL3() {
         setPositionInches(ElevatorConstants.L3);
         currentTarget = ElevatorPosition.POSITION_3;
+        System.out.println("L3");
     }
     
     public void GoToIntakePos() {
-        setPositionInches(ElevatorConstants.L1);
+        setPositionInches(ElevatorConstants.downPos);
         currentTarget = ElevatorPosition.DOWN;
+        System.out.println("Intake");
     }
 }
