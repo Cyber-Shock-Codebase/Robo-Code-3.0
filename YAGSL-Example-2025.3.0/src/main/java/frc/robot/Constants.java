@@ -47,6 +47,10 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
+
+    // Triger Deadband
+    public static final double TRIGGER_DEADBAND = 0.5;
+
   }
 
   public static final class ElevatorConstants{
@@ -92,14 +96,39 @@ public final class Constants
     public static final int ForBeamID = 3;
     public static final int BackBeamID = 4;
 
-    public static final double IntakeSpeed = 20;
-    public static final double ReverseSpeed = 20;
+    public static final double IntakeSpeed = 0.1;
+    public static final double ReverseSpeed = -0.1;
     
     public static final double IndexSpeed = 20;
     public static final double L1Speed = 20;
     public static final double L24Speed = 20;
 
-
-
   }
+
+  public static final class SimulationRobotConstants {
+    public static final double kPixelsPerMeter = 20;
+
+    public static final double kElevatorGearing = 10; // 25:1
+    public static final double kCarriageMass = 10 * 0.453592; // lbs * 0.453592 = kg
+    public static final double kElevatorDrumRadius = .75/39.3701; // in/39.3701 = m
+    public static final double kMinElevatorHeightMeters = 0.1/39.3701; // in/39.3701 = m
+    public static final double kMaxElevatorHeightMeters = 24/39.3701; // in/39.3701 = m
+
+    // public static final double kArmReduction = 60; // 60:1
+    // public static final double kArmLength = 0.433; // m
+    // public static final double kArmMass = 4.3; // Kg
+    // public static final double kMinAngleRads =
+    //     Units.degreesToRadians(-50.1); // -50.1 deg from horiz
+    // public static final double kMaxAngleRads =
+    //     Units.degreesToRadians(40.9 + 180); // 40.9 deg from horiz
+
+    // public static final double kIntakeReduction = 1; // 1:1
+    // public static final double kIntakeLength = 4.635/39.3701; // in/39.3701 = m
+    // public static final double kIntakeMass = 8 * 0.453592; // lbs * 0.453592 = kg
+    // public static final double kIntakeShortBarLength = 0.1524;
+    // public static final double kIntakeLongBarLength = 0.3048;
+    // public static final double kIntakeBarAngleRads = Units.degreesToRadians(-60);
+  }
+
+
 }

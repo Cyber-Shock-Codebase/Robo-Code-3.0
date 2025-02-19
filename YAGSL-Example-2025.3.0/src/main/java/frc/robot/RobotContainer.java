@@ -18,11 +18,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
+import static edu.wpi.first.units.Units.Celsius;
+
 import java.io.File;
 import swervelib.SwerveInputStream;
-import frc.robot.subsystems.Coral;
+// import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Coral.intakeCoral;
+// import frc.robot.subsystems.Coral.intakeCoral;
+import frc.robot.subsystems.Elevator.Setpoint;
+import frc.robot.Configs.CoralSubsystem;
 import frc.robot.Constants.ElevatorConstants;
 
 /**
@@ -32,7 +37,7 @@ import frc.robot.Constants.ElevatorConstants;
  */
 public class RobotContainer
 {
-  Coral Coral = new Coral();
+  // Coral Coral = new Coral();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
@@ -133,7 +138,7 @@ public class RobotContainer
     if (Robot.isSimulation())
     {
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
+      // driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
 
     }
     if (DriverStation.isTest())
@@ -154,10 +159,15 @@ public class RobotContainer
           drivebase.driveToPose(
               new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               );
-      driverXbox.start().whileTrue(Commands.runOnce(elevatorsub::homeElevator));
-      driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().onTrue(Commands.runOnce(elevatorsub::GoToIntakePos).until(elevatorsub::isAtDOWN).andThen(Coral::intake));
-      driverXbox.rightBumper().onTrue(Commands.runOnce(elevatorsub::GoToL1).until(elevatorsub::isAtL1).andThen(Coral::scoreL24));
+      driverXbox.start().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel2));
+      driverXbox.back().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel1));
+      driverXbox.leftBumper().onTrue(elevatorsub.setSetpointCommand(Setpoint.kFeederStation));
+      driverXbox.rightBumper().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel3));
+      // Right Trigger -> Run ball intake, set to leave out when idle
+      driverXbox.rightTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.runIntakeCommand().until(elevatorsub::isCoralReady));
+      // Left Trigger -> Run ball intake in reverse, set to stow when idle
+      driverXbox.leftTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.reverseIntakeCommand());
+
     }
 
   }

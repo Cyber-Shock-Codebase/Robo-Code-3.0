@@ -1,6 +1,16 @@
 {
   "HALProvider": {
     "Other Devices": {
+      "SPARK Flex [21]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [52]": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX (v6)[2]/Rotor Sensor": {
         "header": {
           "open": true
@@ -41,6 +51,7 @@
       "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Alerts": "Alerts",
+      "/SmartDashboard/Coral Subsystem": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
@@ -56,6 +67,11 @@
     },
     "windows": {
       "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Coral Subsystem": {
         "window": {
           "visible": true
         }
@@ -96,6 +112,11 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Motors": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
@@ -105,7 +126,10 @@
         "open": true
       },
       "SmartDashboard": {
-        "Field": {
+        "Coral": {
+          "Intake": {
+            "open": true
+          },
           "open": true
         },
         "open": true,
@@ -116,9 +140,20 @@
     }
   },
   "NetworkTables Info": {
-    "visible": true
-  },
-  "NetworkTables View": {
-    "visible": false
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "Publishers": {
+        "open": true
+      },
+      "Subscribers": {
+        "open": true
+      },
+      "open": true
+    }
   }
 }
