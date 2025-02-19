@@ -132,18 +132,18 @@ public class RobotContainer
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
     } else
     {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
     }
 
     if (Robot.isSimulation())
     {
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      // driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
+      driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
 
     }
     if (DriverStation.isTest())
     {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngle); // Overrides drive command above!
 
       driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
@@ -153,16 +153,16 @@ public class RobotContainer
       // driverXbox.rightBumper().onTrue(Commands.runOnce(coral::scoreL1));
     } else
     {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-      driverXbox.b().whileTrue(
-          drivebase.driveToPose(
-              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              );
-      driverXbox.start().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel2));
-      driverXbox.back().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel1));
-      driverXbox.leftBumper().onTrue(elevatorsub.setSetpointCommand(Setpoint.kFeederStation));
-      driverXbox.rightBumper().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel3));
+      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
+      // driverXbox.b().whileTrue(
+      //     drivebase.driveToPose(
+      //         new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
+      //                         );
+      driverXbox.povUp().onTrue(elevatorsub.setSetpointCommand(Setpoint.kFeederStation));
+      driverXbox.povRight().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel1));
+      driverXbox.povDown().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel2));
+      driverXbox.povLeft().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel3));
       // Right Trigger -> Run ball intake, set to leave out when idle
       driverXbox.rightTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.runIntakeCommand().until(elevatorsub::isCoralReady));
       // Left Trigger -> Run ball intake in reverse, set to stow when idle

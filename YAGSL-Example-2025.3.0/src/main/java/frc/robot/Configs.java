@@ -3,14 +3,13 @@ package frc.robot;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public final class Configs {
 
   public static final class CoralSubsystem {
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
-    public static final SparkFlexConfig elevatorConfig = new SparkFlexConfig();
+    public static final SparkMaxConfig elevatorConfig = new SparkMaxConfig();
     public static final SparkMaxConfig intakeConfig = new SparkMaxConfig();
 
     static {
@@ -41,8 +40,10 @@ public final class Configs {
        * will prevent any actuation of the elevator in the reverse direction if the limit switch is
        * pressed.
        */
-      elevatorConfig.limitSwitch.equals(armConfig);
-
+      elevatorConfig
+          .limitSwitch
+          .reverseLimitSwitchEnabled(true)
+          .reverseLimitSwitchType(Type.kNormallyOpen);
 
       /*
        * Configure the closed loop controller. We want to make sure we set the

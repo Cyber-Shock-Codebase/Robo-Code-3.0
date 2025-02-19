@@ -71,11 +71,6 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Coral Subsystem": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Field": {
         "OdometryPose": {
           "arrowColor": [
@@ -89,7 +84,14 @@
             0.0,
             255.0,
             255.0
-          ]
+          ],
+          "length": 0.6859999895095825,
+          "style": "Box/Image"
+        },
+        "Robot": {
+          "image": "C:\\Users\\User\\Downloads\\Robot(2).png",
+          "length": 0.6859999895095825,
+          "style": "Box/Image"
         },
         "XModules": {
           "arrowColor": [
@@ -108,15 +110,7 @@
         "left": 534,
         "right": 3466,
         "top": 291,
-        "width": 17.54825210571289,
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Motors": {
-        "window": {
-          "visible": true
-        }
+        "width": 17.54825210571289
       }
     }
   },
@@ -129,8 +123,7 @@
         "Coral": {
           "Intake": {
             "open": true
-          },
-          "open": true
+          }
         },
         "open": true,
         "swerve": {

@@ -15,7 +15,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -92,8 +91,8 @@ public class Elevator extends SubsystemBase {
           0.0,
           0.0);
 
-  private DCMotor armMotorModel = DCMotor.getNEO(1);
-  private SparkMaxSim armMotorSim;
+  // private DCMotor armMotorModel = DCMotor.getNEO(1);
+  // private SparkMaxSim armMotorSim;
 //   private final SingleJointedArmSim m_armSim =
 //       new SingleJointedArmSim(
 //           armMotorModel,
@@ -168,8 +167,14 @@ public Elevator() {
    */
   private void moveToSetpoint() {
     // armController.setReference(armCurrentTarget, ControlType.kMAXMotionPositionControl);
-    elevatorClosedLoopController.setReference(
+    if(iselevatorfree()) {
+      elevatorClosedLoopController.setReference(
         elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
+    }else {
+      elevatorMotor.set(0);;
+    }
+    
+    
   }
 
   /** Zero the elevator encoder when the limit switch is pressed. */
@@ -205,6 +210,10 @@ public Elevator() {
 
   public boolean isCoralReady() {
     return !forbeam.get() && !isCoralproblematic();
+  }
+
+  public boolean iselevatorfree() {
+    return !TopLimitSwitch.get() && !BottomLimitSwitch.get() && isCoralproblematic();
   }
 
   /** Zero the arm and elevator encoders when the user button is pressed on the roboRIO. */
@@ -288,6 +297,10 @@ public Elevator() {
     SmartDashboard.putNumber("Coral/Elevator/Target Position", elevatorCurrentTarget);
     SmartDashboard.putNumber("Coral/Elevator/Actual Position", elevatorEncoder.getPosition());
     SmartDashboard.putNumber("Coral/Intake/Applied Output", intakeMotor.getAppliedOutput());
+    SmartDashboard.putString("BottomLimitSwitch", BottomLimitSwitch.get()? "Pressed" : "Not Pressed");
+    SmartDashboard.putString("TopLimitSwitch", TopLimitSwitch.get()? "Pressed" : "Not Pressed");
+    SmartDashboard.putString("ForBeam", !forbeam.get()? "triped" : "Not triped");
+    SmartDashboard.putString("BackBeam", !backbeam.get()? "triped" : "Not triped");
 
     // Update mechanism2d
     m_elevatorMech2d.setLength(
