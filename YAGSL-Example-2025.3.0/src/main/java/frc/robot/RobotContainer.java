@@ -164,7 +164,7 @@ public class RobotContainer
       driverXbox.povDown().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel2));
       driverXbox.povLeft().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel3));
       // Right Trigger -> Run ball intake, set to leave out when idle
-      driverXbox.rightTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.runIntakeCommand().until(elevatorsub::isCoralReady));
+      driverXbox.b().whileTrue(Commands.runOnce(elevatorsub::Intakeandshoot));
       // Left Trigger -> Run ball intake in reverse, set to stow when idle
       driverXbox.leftTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.reverseIntakeCommand());
 

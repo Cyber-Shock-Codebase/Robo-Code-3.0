@@ -64,9 +64,9 @@ public final class Constants
     public static final double countsPerInch = (360 * 10 )/(2* 3.14159265359);
     
     public static final double downPos = .1;
-    public static final double L1 = 7.25;
-    public static final double L2 = 23;
-    public static final double L3 = 20;
+    public static final double L1 = 15.45;
+    public static final double L2 = 23.64;
+    public static final double L3 = 45.95;
     public static final double L4 = 20;
     public static final double bottomPos = 0;
     
@@ -111,8 +111,8 @@ public final class Constants
     public static final double kElevatorGearing = 10; // 25:1
     public static final double kCarriageMass = 10 * 0.453592; // lbs * 0.453592 = kg
     public static final double kElevatorDrumRadius = .75/39.3701; // in/39.3701 = m
-    public static final double kMinElevatorHeightMeters = 0.1/39.3701; // in/39.3701 = m
-    public static final double kMaxElevatorHeightMeters = 24/39.3701; // in/39.3701 = m
+    public static final double kMinElevatorHeightMeters = 0/39.3701; // in/39.3701 = m
+    public static final double kMaxElevatorHeightMeters = 47.04/39.3701; // in/39.3701 = m
 
     // public static final double kArmReduction = 60; // 60:1
     // public static final double kArmLength = 0.433; // m

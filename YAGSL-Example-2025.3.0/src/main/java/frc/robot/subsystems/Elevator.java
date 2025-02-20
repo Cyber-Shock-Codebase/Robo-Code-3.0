@@ -167,12 +167,24 @@ public Elevator() {
    */
   private void moveToSetpoint() {
     // armController.setReference(armCurrentTarget, ControlType.kMAXMotionPositionControl);
-    if(iselevatorfree()) {
+    if(BottomLimitSwitch.get() && elevatorMotor.get() > 0) {
+      elevatorMotor.set(0);
+    }
+     if(TopLimitSwitch.get() && elevatorMotor.get() < 0) {
+      elevatorMotor.set(0);
+    };
+    if(true) {
       elevatorClosedLoopController.setReference(
         elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
     }else {
-      elevatorMotor.set(0);;
+      elevatorMotor.set(0);
     }
+    if(BottomLimitSwitch.get() && elevatorMotor.get() > 0) {
+        elevatorMotor.set(0);
+    }
+    if(TopLimitSwitch.get() && elevatorMotor.get() < 0) {
+        elevatorMotor.set(0);
+    };
     
     
   }
@@ -213,7 +225,7 @@ public Elevator() {
   }
 
   public boolean iselevatorfree() {
-    return !TopLimitSwitch.get() && !BottomLimitSwitch.get() && isCoralproblematic();
+    return !TopLimitSwitch.get() && !BottomLimitSwitch.get();
   }
 
   /** Zero the arm and elevator encoders when the user button is pressed on the roboRIO. */
@@ -273,6 +285,18 @@ public Elevator() {
   public Command runIntakeCommand() {
     return this.startEnd(
         () -> this.setIntakePower(Shooter.IntakeSpeed), () -> this.setIntakePower(0.0));
+  }
+  
+  public void Intakeandshoot() {
+    if(elevatorCurrentTarget == ElevatorConstants.L1 ) {
+      this.setIntakePower(Shooter.L1Speed);
+    } else if(elevatorCurrentTarget == ElevatorConstants.L2 || elevatorCurrentTarget == ElevatorConstants.L3) {
+      this.setIntakePower(Shooter.L24Speed);
+    } else if(elevatorCurrentTarget == ElevatorConstants.downPos) {
+      while (!isCoralReady()) {
+        this.setIntakePower(Shooter.IntakeSpeed);
+      };
+    };
   }
 
   /**

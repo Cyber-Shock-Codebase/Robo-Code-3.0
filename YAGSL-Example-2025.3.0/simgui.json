@@ -6,6 +6,11 @@
           "open": true
         }
       },
+      "SPARK Flex [21] LIMIT SWITCH (REVERSE)": {
+        "header": {
+          "open": true
+        }
+      },
       "SPARK MAX [52]": {
         "header": {
           "open": true
@@ -71,6 +76,11 @@
           "visible": true
         }
       },
+      "/SmartDashboard/Coral Subsystem": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "OdometryPose": {
           "arrowColor": [
@@ -110,7 +120,10 @@
         "left": 534,
         "right": 3466,
         "top": 291,
-        "width": 17.54825210571289
+        "width": 17.54825210571289,
+        "window": {
+          "visible": true
+        }
       }
     }
   },
