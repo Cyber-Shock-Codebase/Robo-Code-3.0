@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.concurrent.locks.Condition;
+
+import com.pathplanner.lib.events.OneShotTriggerEvent;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkLimitSwitchSim;
@@ -21,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.Shooter;
@@ -48,15 +52,13 @@ public class Elevator extends SubsystemBase {
 
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
   // need to initialize the closed loop controller and encoder.
-  private SparkFlex elevatorMotor =
-      new SparkFlex(ElevatorConstants.leftElevatorID, MotorType.kBrushless);
-  private SparkClosedLoopController elevatorClosedLoopController =
-      elevatorMotor.getClosedLoopController();
+  private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.leftElevatorID, MotorType.kBrushless);
+  private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
   private RelativeEncoder elevatorEncoder = elevatorMotor.getEncoder();
 
   // Initialize limit switches for the elevator
   private DigitalInput BottomLimitSwitch = new DigitalInput(ElevatorConstants.limitSwitchPort);
-  private DigitalInput TopLimitSwitch = new DigitalInput(ElevatorConstants.toplimitSwitchPort);
+  // private DigitalInput TopLimitSwitch = new DigitalInput(ElevatorConstants.toplimitSwitchPort);
 
   // Initialize intake sensors
     private DigitalInput forbeam = new DigitalInput(Shooter.ForBeamID);
@@ -64,8 +66,9 @@ public class Elevator extends SubsystemBase {
 
   // Initialize intake SPARK. We will use open loop control for this so we don't need a closed loop
   // controller like above.
-  private SparkMax intakeMotor =
-      new SparkMax(Shooter.LeftMotorId, MotorType.kBrushless);
+  private SparkMax intakeMotor = new SparkMax(Shooter.LeftMotorId, MotorType.kBrushless);
+  private SparkClosedLoopController IntakeClosedLoopController = intakeMotor.getClosedLoopController();
+  private RelativeEncoder IntakeEncoder = intakeMotor.getEncoder();
 
   // Member variables for subsystem state management
   private boolean wasResetByButton = false;
@@ -76,7 +79,7 @@ public class Elevator extends SubsystemBase {
 
   // Simulation setup and variables
   private DCMotor elevatorMotorModel = DCMotor.getNeoVortex(1);
-  private SparkFlexSim elevatorMotorSim;
+  private SparkMaxSim elevatorMotorSim;
   private SparkLimitSwitchSim elevatorLimitSwitchSim;
   private final ElevatorSim m_elevatorSim =
       new ElevatorSim(
@@ -155,7 +158,7 @@ public Elevator() {
     elevatorEncoder.setPosition(0);
 
     // Initialize simulation values
-    elevatorMotorSim = new SparkFlexSim(elevatorMotor, elevatorMotorModel);
+    elevatorMotorSim = new SparkMaxSim(elevatorMotor, elevatorMotorModel);
     elevatorLimitSwitchSim = new SparkLimitSwitchSim(elevatorMotor, false);
     // armMotorSim = new SparkMaxSim(armMotor, armMotorModel);
   }
@@ -167,25 +170,13 @@ public Elevator() {
    */
   private void moveToSetpoint() {
     // armController.setReference(armCurrentTarget, ControlType.kMAXMotionPositionControl);
-    if(BottomLimitSwitch.get() && elevatorMotor.get() > 0) {
-      elevatorMotor.set(0);
-    }
-     if(TopLimitSwitch.get() && elevatorMotor.get() < 0) {
-      elevatorMotor.set(0);
-    };
-    if(true) {
+    // if Coral is out of the way or the elevator is not at the down position, move the elevator
+    if(!isCoralproblematic() || elevatorCurrentTarget != ElevatorConstants.downPos) {
       elevatorClosedLoopController.setReference(
         elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
     }else {
       elevatorMotor.set(0);
     }
-    if(BottomLimitSwitch.get() && elevatorMotor.get() > 0) {
-        elevatorMotor.set(0);
-    }
-    if(TopLimitSwitch.get() && elevatorMotor.get() < 0) {
-        elevatorMotor.set(0);
-    };
-    
     
   }
 
@@ -201,16 +192,16 @@ public Elevator() {
     }
   }
 
-  private void offsetElevatorOnTopLimitSwitch() {
-    if (!wasResetByOffsetTopLimit && TopLimitSwitch.get()) {
-      // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
-      // prevent constant zeroing while pressed
-      elevatorEncoder.setPosition(ElevatorConstants.maxPos);
-      wasResetByOffsetTopLimit = true;
-    } else if (!TopLimitSwitch.get()) {
-        wasResetByOffsetTopLimit = false;
-    }
-  }
+  // private void offsetElevatorOnTopLimitSwitch() {
+  //   if (!wasResetByOffsetTopLimit && TopLimitSwitch.get()) {
+  //     // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
+  //     // prevent constant zeroing while pressed
+  //     elevatorEncoder.setPosition(ElevatorConstants.maxPos);
+  //     wasResetByOffsetTopLimit = true;
+  //   } else if (!TopLimitSwitch.get()) {
+  //       wasResetByOffsetTopLimit = false;
+  //   }
+  // }
 
   public boolean isCoralproblematic() {
     return !backbeam.get();
@@ -221,12 +212,12 @@ public Elevator() {
   }
 
   public boolean isCoralReady() {
-    return !forbeam.get() && !isCoralproblematic();
+    return isHoldingCoral() && !isCoralproblematic();
   }
 
-  public boolean iselevatorfree() {
-    return !TopLimitSwitch.get() && !BottomLimitSwitch.get();
-  }
+  // public boolean iselevatorfree() {
+  //   return !TopLimitSwitch.get() && !BottomLimitSwitch.get();
+  // }
 
   /** Zero the arm and elevator encoders when the user button is pressed on the roboRIO. */
   private void zeroOnUserButton() {
@@ -287,16 +278,8 @@ public Elevator() {
         () -> this.setIntakePower(Shooter.IntakeSpeed), () -> this.setIntakePower(0.0));
   }
   
-  public void Intakeandshoot() {
-    if(elevatorCurrentTarget == ElevatorConstants.L1 ) {
-      this.setIntakePower(Shooter.L1Speed);
-    } else if(elevatorCurrentTarget == ElevatorConstants.L2 || elevatorCurrentTarget == ElevatorConstants.L3) {
-      this.setIntakePower(Shooter.L24Speed);
-    } else if(elevatorCurrentTarget == ElevatorConstants.downPos) {
-      while (!isCoralReady()) {
-        this.setIntakePower(Shooter.IntakeSpeed);
-      };
-    };
+  public Trigger CoralTrigger() {
+    return new Trigger(this::isCoralReady);
   }
 
   /**
@@ -313,7 +296,7 @@ public Elevator() {
     moveToSetpoint();
     zeroElevatorOnLimitSwitch();
     zeroOnUserButton();
-    offsetElevatorOnTopLimitSwitch();
+    // offsetElevatorOnTopLimitSwitch();
 
     // Display subsystem values
     // SmartDashboard.putNumber("Coral/Arm/Target Position", armCurrentTarget);
@@ -322,9 +305,12 @@ public Elevator() {
     SmartDashboard.putNumber("Coral/Elevator/Actual Position", elevatorEncoder.getPosition());
     SmartDashboard.putNumber("Coral/Intake/Applied Output", intakeMotor.getAppliedOutput());
     SmartDashboard.putString("BottomLimitSwitch", BottomLimitSwitch.get()? "Pressed" : "Not Pressed");
-    SmartDashboard.putString("TopLimitSwitch", TopLimitSwitch.get()? "Pressed" : "Not Pressed");
-    SmartDashboard.putString("ForBeam", !forbeam.get()? "triped" : "Not triped");
-    SmartDashboard.putString("BackBeam", !backbeam.get()? "triped" : "Not triped");
+    // SmartDashboard.putString("TopLimitSwitch", TopLimitSwitch.get()? "Pressed" : "Not Pressed");
+    SmartDashboard.putBoolean("ForBeam Triped", !forbeam.get());
+    SmartDashboard.putBoolean("BackBeam Triped", !backbeam.get());
+    SmartDashboard.putBoolean("Coral Problematic", isCoralproblematic());
+    SmartDashboard.putBoolean("Holding coral", isHoldingCoral());
+    SmartDashboard.putBoolean("Coral ready", isCoralReady());
 
     // Update mechanism2d
     m_elevatorMech2d.setLength(

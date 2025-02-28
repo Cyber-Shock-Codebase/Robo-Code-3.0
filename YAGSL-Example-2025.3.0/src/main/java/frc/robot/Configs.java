@@ -33,7 +33,7 @@ public final class Configs {
       //     .allowedClosedLoopError(0.25);
 
       // Configure basic settings of the elevator motor
-      elevatorConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(50).voltageCompensation(12);
+      elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).voltageCompensation(12);
 
       /*
        * Configure the reverse limit switch for the elevator. By enabling the limit switch, this
@@ -53,7 +53,8 @@ public final class Configs {
           .closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control
-          .p(0.05)
+          .p(0.1)
+          .d(0.05)
           .outputRange(-1, 1)
           .maxMotion
           // Set MAXMotion parameters for position control
@@ -62,7 +63,15 @@ public final class Configs {
           .allowedClosedLoopError(0.5);
 
       // Configure basic settings of the intake motor
-      intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      intakeConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).voltageCompensation(12);
+      intakeConfig
+        .closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(0.01)
+        .d(.001)
+        .outputRange(-1, 1)
+        .maxMotion.maxVelocity(6000)
+        .maxAcceleration(1000)
+        .allowedClosedLoopError(0.5);
     }
   }
 

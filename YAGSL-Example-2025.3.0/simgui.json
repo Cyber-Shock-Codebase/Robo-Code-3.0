@@ -1,49 +1,39 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "SPARK Flex [21]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK Flex [21] LIMIT SWITCH (REVERSE)": {
-        "header": {
-          "open": true
-        }
-      },
       "SPARK MAX [52]": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX (v6)[2]/Rotor Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX (v6)[51]": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[50]": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[51]/Integrated Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[52]/Integrated Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[8]/Integrated Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       }
     }
@@ -51,10 +41,6 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/LiveWindow/SwerveSubsystem": "Subsystem",
-      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
-      "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
-      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Coral Subsystem": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
@@ -62,13 +48,8 @@
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
       "/SmartDashboard/Motors": "Alerts",
-      "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
-      "/SmartDashboard/Pigeon 2 [13]": "Gyro",
-      "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Swerve Drive": "Alerts",
-      "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
-      "/SmartDashboard/navX-Sensor[1]": "Gyro",
-      "/SmartDashboard/navX-Sensor[4]": "Gyro"
+      "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d"
     },
     "windows": {
       "/FMSInfo": {
@@ -76,44 +57,7 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Coral Subsystem": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Field": {
-        "OdometryPose": {
-          "arrowColor": [
-            255.0,
-            255.0,
-            0.0,
-            255.0
-          ],
-          "color": [
-            224.99996948242188,
-            0.0,
-            255.0,
-            255.0
-          ],
-          "length": 0.6859999895095825,
-          "style": "Box/Image"
-        },
-        "Robot": {
-          "image": "C:\\Users\\User\\Downloads\\Robot(2).png",
-          "length": 0.6859999895095825,
-          "style": "Box/Image"
-        },
-        "XModules": {
-          "arrowColor": [
-            0.09611687064170837,
-            0.17414122819900513,
-            0.9803921580314636,
-            255.0
-          ],
-          "arrowSize": 33,
-          "arrowWeight": 3.0,
-          "style": "Hidden"
-        },
         "bottom": 1638,
         "builtin": "2025 Reefscape",
         "height": 8.051901817321777,
@@ -129,37 +73,19 @@
   },
   "NetworkTables": {
     "transitory": {
-      "FMSInfo": {
-        "open": true
-      },
       "SmartDashboard": {
         "Coral": {
           "Intake": {
-            "open": true
+            "open": false
           }
-        },
-        "open": true,
-        "swerve": {
-          "open": true
         }
       }
     }
   },
   "NetworkTables Info": {
-    "Clients": {
-      "open": true
-    },
-    "Connections": {
-      "open": true
-    },
-    "Server": {
-      "Publishers": {
-        "open": true
-      },
-      "Subscribers": {
-        "open": true
-      },
-      "open": true
-    }
+    "visible": true
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

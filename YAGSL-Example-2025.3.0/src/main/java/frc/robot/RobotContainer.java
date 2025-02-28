@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import static edu.wpi.first.units.Units.Celsius;
 
@@ -42,7 +44,7 @@ public class RobotContainer
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  public final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/maxSwerve"));
   private final Elevator    elevatorsub           = new Elevator();
   /**
@@ -94,6 +96,8 @@ public class RobotContainer
                                                                                                               (Math.PI *
                                                                                                                2))
                                                                                .headingWhile(true);
+
+  private Pose2d CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -153,21 +157,34 @@ public class RobotContainer
       // driverXbox.rightBumper().onTrue(Commands.runOnce(coral::scoreL1));
     } else
     {
+      // Start button -> Zero gyro
       driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
+      // driverXbox.b().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+      driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       // driverXbox.b().whileTrue(
       //     drivebase.driveToPose(
       //         new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
       //                         );
+      // D pad up -> Set elevator to feeder station height
       driverXbox.povUp().onTrue(elevatorsub.setSetpointCommand(Setpoint.kFeederStation));
+      // D pad right -> Set elevator to level 1 height
       driverXbox.povRight().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel1));
+      // D pad down -> Set elevator to level 2 height
       driverXbox.povDown().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel2));
+      // D pad left -> Set elevator to level 3 height
       driverXbox.povLeft().onTrue(elevatorsub.setSetpointCommand(Setpoint.kLevel3));
-      // Right Trigger -> Run ball intake, set to leave out when idle
-      driverXbox.b().whileTrue(Commands.runOnce(elevatorsub::Intakeandshoot));
-      // Left Trigger -> Run ball intake in reverse, set to stow when idle
+      // Right Trigger -> Run intake to apropiate speed or intake depending on elevator height
+      driverXbox.rightTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.runIntakeCommand().until(elevatorsub.CoralTrigger()));
+      // Left Trigger -> Run intake in reverse
       driverXbox.leftTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.reverseIntakeCommand());
-
+      // Right Bumper -> force intake forwards
+      driverXbox.rightBumper().whileTrue(elevatorsub.runIntakeCommand());
+      // Left Bumper -> force intake backwards
+      // driverXbox.b().onTrue(Commands.runOnce(() -> drivebase.driveToLeftCoral()));
+      // driverXbox.b().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
+      // driverXbox.a().onTrue(Commands.runOnce(() -> drivebase.driveToRightCoral()));
+      // driverXbox.a().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
+      
     }
 
   }
@@ -187,5 +204,40 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake);
   }
+
+  
+  // public void getCoralScoreLEFTpose()
+  // {
+  //   double heading = drivebase.getHeading().getDegrees();
+  //     Pose2d CoralScorePoseLEFT;
+  //     if (heading >= 30 && heading < 90) {
+  //       CoralScorePoseLEFT = new Pose2d(3.668, 2.916, Rotation2d.fromDegrees(60));
+  //       System.out.println("60");
+  //     } else if (heading >= 90 && heading < 150) {
+  //       CoralScorePoseLEFT = new Pose2d(5.035, 2.772, Rotation2d.fromDegrees(120));
+  //       System.out.println("120");
+  //     } else if (heading >= 150 && heading < 210) {
+  //       CoralScorePoseLEFT = new Pose2d(5.826, 3.875, Rotation2d.fromDegrees(180));
+  //       System.out.println("180");
+  //     } else if (heading >= 210 && heading < 270) {
+  //       CoralScorePoseLEFT = new Pose2d(5.323, 5.122, Rotation2d.fromDegrees(240));
+  //       System.out.println("240");
+  //     } else if (heading >= 270 && heading < 330) {
+  //       CoralScorePoseLEFT = new Pose2d(3.944, 5.266, Rotation2d.fromDegrees(300));
+  //       System.out.println("300");
+  //     } else {
+  //       CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
+  //       System.out.println("0");
+          
+  //     }
+
+  //     if (drivebase.isRedAlliance()) {
+  //       CoralScorePoseLEFT = new Pose2d(
+  //       -CoralScorePoseLEFT.getX(),
+  //       -CoralScorePoseLEFT.getY(),
+  //       CoralScorePoseLEFT.getRotation().plus(Rotation2d.fromDegrees(180))
+  //       );
+  //     }
+  // }
 
 }

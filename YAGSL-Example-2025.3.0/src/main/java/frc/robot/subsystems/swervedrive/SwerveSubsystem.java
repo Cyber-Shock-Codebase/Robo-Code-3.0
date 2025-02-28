@@ -6,6 +6,7 @@ package frc.robot.subsystems.swervedrive;
 
 import static edu.wpi.first.units.Units.Meter;
 
+import static java.lang.Math.abs;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -15,6 +16,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -39,6 +41,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.Vision.Cameras;
 import java.io.File;
 import java.io.IOException;
+import java.time.chrono.IsoChronology;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,11 +69,11 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * AprilTag field layout.
    */
-  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
   /**
    * Enable vision odometry updates while driving.
    */
-  private final boolean             visionDriveTest     = false;
+  private final boolean             visionDriveTest     = true;
   /**
    * PhotonVision class to keep an accurate odometry.
    */
@@ -280,6 +283,372 @@ public class SwerveSubsystem extends SubsystemBase
         edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
                                      );
   }
+
+  // public Pose2d CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
+  
+  // public void findLeftCoral(){
+  //   // find the pose of the left coral
+  //   double heading = getHeading().getDegrees();
+  //   Pose2d CoralScorePoseLEFT;
+  //   if (heading >= 30 && heading < 90) {
+  //     CoralScorePoseLEFT = new Pose2d(3.668, 2.916, Rotation2d.fromDegrees(60));
+  //     System.out.println("60");
+  //   } else if (heading >= 90 && heading < 150) {
+  //     CoralScorePoseLEFT = new Pose2d(5.035, 2.772, Rotation2d.fromDegrees(120));
+  //     System.out.println("120");
+  //   } else if (heading >= 150 && heading < 210) {
+  //     CoralScorePoseLEFT = new Pose2d(5.826, 3.875, Rotation2d.fromDegrees(180));
+  //     System.out.println("180");
+  //   } else if (heading >= 210 && heading < 270) {
+  //     CoralScorePoseLEFT = new Pose2d(5.323, 5.122, Rotation2d.fromDegrees(240));
+  //     System.out.println("240");
+  //   } else if (heading >= 270 && heading < 330) {
+  //     CoralScorePoseLEFT = new Pose2d(3.944, 5.266, Rotation2d.fromDegrees(300));
+  //     System.out.println("300");
+  //   } else {
+  //     CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
+  //     System.out.println("0");
+        
+  //   }
+
+  //   if (isRedAlliance()) {
+  //     CoralScorePoseLEFT = new Pose2d(
+  //     -CoralScorePoseLEFT.getX(),
+  //     -CoralScorePoseLEFT.getY(),
+  //     CoralScorePoseLEFT.getRotation().plus(Rotation2d.fromDegrees(180))
+  //     );
+  //   }
+
+  //   System.out.println(CoralScorePoseLEFT);
+  //   System.out.println(getHeading().getDegrees());
+  // }
+
+  public void stopCoralpathing()
+  {
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumChassisVelocity(), 4.0,
+        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+
+    System.out.println("stoping");
+          AutoBuilder.pathfindToPose(
+            AutoBuilder.getCurrentPose(),
+            constraints,
+            edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+  }
+  
+  public void driveToLeftCoral()
+  {
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumChassisVelocity(), 4.0,
+        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+    
+    
+    double heading = getHeading().getDegrees();
+    
+    if (getHeading().getDegrees() < 0) {
+    heading = 360 + heading;
+    }
+    if (isRedAlliance()){
+      if(heading < 180){
+        heading += 180;
+      } else {
+        heading = abs(heading - 180);
+        System.err.println(heading);
+      }
+    }
+    if (isRedAlliance()) {
+      if (heading >= 30 && heading < 90) {
+        System.out.println("Red-60");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(3.668, 2.916, Rotation2d.fromDegrees(60))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+          if (!Thread.currentThread().isInterrupted() ) {
+          break;
+        }}
+      } else if (heading >= 90 && heading < 150) {
+        System.out.println("red-120");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(5.035, 2.772, Rotation2d.fromDegrees(120))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else if (heading >= 150 && heading < 210) {
+        System.out.println("red-180");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(5.826, 3.875, Rotation2d.fromDegrees(180))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else if (heading >= 210 && heading < 270) {
+        System.out.println("red-240");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(5.323, 5.122, Rotation2d.fromDegrees(240))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else if (heading >= 270 && heading < 330) {
+        System.out.println("red-300");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(3.944, 5.266, Rotation2d.fromDegrees(300))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else {
+        System.out.println("red-0");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      }
+    } else if (heading >= 30 && heading < 90) {
+      System.out.println("60");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(3.668, 2.916, Rotation2d.fromDegrees(60)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted() ) {
+        break;
+      }}
+    } else if (heading >= 90 && heading < 150) {
+      System.out.println("120");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(5.035, 2.772, Rotation2d.fromDegrees(120)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else if (heading >= 150 && heading < 210) {
+      System.out.println("180");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(5.826, 3.875, Rotation2d.fromDegrees(180)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else if (heading >= 210 && heading < 270) {
+      System.out.println("240");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(5.323, 5.122, Rotation2d.fromDegrees(240)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else if (heading >= 270 && heading < 330) {
+      System.out.println("300");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(3.944, 5.266, Rotation2d.fromDegrees(300)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else {
+      System.out.println("0");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    }
+  }
+
+  public void driveToRightCoral()
+  {
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumChassisVelocity(), 4.0,
+        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+    
+    
+    double heading = getHeading().getDegrees();
+    
+    if (getHeading().getDegrees() < 0) {
+    heading = 360 + heading;
+    }
+    if (isRedAlliance()){
+      if(heading < 180){
+        heading += 180;
+      } else {
+        heading = abs(heading - 180);
+        System.err.println(heading);
+      }
+    }
+    if (isRedAlliance()) {
+      if (heading >= 30 && heading < 90) {
+        System.out.println("red-60");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(3.958, 2.831, Rotation2d.fromDegrees(60))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+          if (!Thread.currentThread().isInterrupted() ) {
+          break;
+        }}
+      } else if (heading >= 90 && heading < 150) {
+        System.out.println("red-120");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(5.299, 2.957, Rotation2d.fromDegrees(120))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else if (heading >= 150 && heading < 210) {
+        System.out.println("red-180");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(5.831, 4.171, Rotation2d.fromDegrees(180))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else if (heading >= 210 && heading < 270) {
+        System.out.println("red-240");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(5.037, 5.224, Rotation2d.fromDegrees(240))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else if (heading >= 270 && heading < 330) {
+        System.out.println("red-300");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(3.668, 5.110, Rotation2d.fromDegrees(300))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      } else {
+        System.out.println("red-0");
+        while (true) {
+        AutoBuilder.pathfindToPose(
+          FlippingUtil.flipFieldPose(new Pose2d(3.162, 3.816, Rotation2d.fromDegrees(0))),
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted()) {
+          break;
+        }
+        }
+      }
+    }else if (heading >= 30 && heading < 90) {
+      System.out.println("60");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(3.958, 2.831, Rotation2d.fromDegrees(60)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+        if (!Thread.currentThread().isInterrupted() ) {
+        break;
+      }}
+    } else if (heading >= 90 && heading < 150) {
+      System.out.println("120");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(5.299, 2.957, Rotation2d.fromDegrees(120)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else if (heading >= 150 && heading < 210) {
+      System.out.println("180");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(5.831, 4.171, Rotation2d.fromDegrees(180)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else if (heading >= 210 && heading < 270) {
+      System.out.println("240");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(5.037, 5.224, Rotation2d.fromDegrees(240)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else if (heading >= 270 && heading < 330) {
+      System.out.println("300");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(3.668, 5.110, Rotation2d.fromDegrees(300)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    } else {
+      System.out.println("0");
+      while (true) {
+      AutoBuilder.pathfindToPose(
+        new Pose2d(3.162, 3.816, Rotation2d.fromDegrees(0)),
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+      if (!Thread.currentThread().isInterrupted()) {
+        break;
+      }
+      }
+    }
+  }
+
+  
 
   /**
    * Drive with {@link SwerveSetpointGenerator} from 254, implemented by PathPlanner.
@@ -571,7 +940,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @return true if the red alliance, false if blue. Defaults to false if none is available.
    */
-  private boolean isRedAlliance()
+  public boolean isRedAlliance()
   {
     var alliance = DriverStation.getAlliance();
     return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;

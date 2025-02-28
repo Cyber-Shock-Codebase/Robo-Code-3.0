@@ -56,22 +56,21 @@ public final class Constants
   public static final class ElevatorConstants{
     
     public static final int leftElevatorID = 21;
-    public static final int rightElevatorID = 12;
     public static final int limitSwitchPort = 0;
-    public static final int toplimitSwitchPort = 1;
+    // public static final int toplimitSwitchPort = 1;
 
    //countsper inch = (360 * gear ratio)/(diamiter of sprocket * pi) 
     public static final double countsPerInch = (360 * 10 )/(2* 3.14159265359);
     
     public static final double downPos = .1;
-    public static final double L1 = 15.45;
-    public static final double L2 = 23.64;
-    public static final double L3 = 45.95;
+    public static final double L1 = 10;
+    public static final double L2 = 15.4;
+    public static final double L3 = 42.6;
     public static final double L4 = 20;
     public static final double bottomPos = 0;
     
     public static final double minPos = 0;
-    public static final double maxPos = 24;
+    public static final double maxPos = 48;
     public static final double posTolerance = .25;
 
     public static final double maxVelocity = 0.01;
@@ -90,18 +89,17 @@ public final class Constants
   }
 
   public static final class Shooter{
-    public static final int RightMotorId = 51;
-    public static final int LeftMotorId = 52;
+    public static final int LeftMotorId = 61;
 
     public static final int ForBeamID = 3;
     public static final int BackBeamID = 4;
 
-    public static final double IntakeSpeed = 0.1;
-    public static final double ReverseSpeed = -0.1;
+    public static final double IntakeSpeed = -0.23;
+    public static final double ReverseSpeed = 0.2;
     
     public static final double IndexSpeed = 20;
-    public static final double L1Speed = 20;
-    public static final double L24Speed = 20;
+    public static final double L1Speed = .5;
+    public static final double L24Speed = .5;
 
   }
 
@@ -112,7 +110,7 @@ public final class Constants
     public static final double kCarriageMass = 10 * 0.453592; // lbs * 0.453592 = kg
     public static final double kElevatorDrumRadius = .75/39.3701; // in/39.3701 = m
     public static final double kMinElevatorHeightMeters = 0/39.3701; // in/39.3701 = m
-    public static final double kMaxElevatorHeightMeters = 47.04/39.3701; // in/39.3701 = m
+    public static final double kMaxElevatorHeightMeters = 45.04/39.3701; // in/39.3701 = m
 
     // public static final double kArmReduction = 60; // 60:1
     // public static final double kArmLength = 0.433; // m
