@@ -51,8 +51,8 @@ public class RobotContainer
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                () -> driverXbox.getLeftY() * -1,
-                                                                () -> driverXbox.getLeftX() * -1)
+                                                                () -> driverXbox.getLeftY() * 1,
+                                                                () -> driverXbox.getLeftX() * 1)
                                                             .withControllerRotationAxis(driverXbox::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
@@ -97,8 +97,6 @@ public class RobotContainer
                                                                                                                2))
                                                                                .headingWhile(true);
 
-  private Pose2d CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -127,8 +125,8 @@ public class RobotContainer
         driveDirectAngle);
     Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-    Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
-        driveDirectAngleKeyboard);
+    Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
+    NamedCommands.registerCommand("ScoreL2", Commands.runOnce(elevatorsub::Scorel2));
 
 
     if (RobotBase.isSimulation())
@@ -180,11 +178,11 @@ public class RobotContainer
       // Right Bumper -> force intake forwards
       driverXbox.rightBumper().whileTrue(elevatorsub.runIntakeCommand());
       // Left Bumper -> force intake backwards
-      // driverXbox.b().onTrue(Commands.runOnce(() -> drivebase.driveToLeftCoral()));
-      // driverXbox.b().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
-      // driverXbox.a().onTrue(Commands.runOnce(() -> drivebase.driveToRightCoral()));
-      // driverXbox.a().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
-      
+      driverXbox.b().whileTrue(Commands.runOnce(() -> drivebase.driveToLeftCoral()));
+      driverXbox.b().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
+      driverXbox.a().whileTrue(Commands.runOnce(() -> drivebase.driveToRightCoral()));
+      driverXbox.a().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
+      driverXbox.x().onTrue(Commands.runOnce(() -> elevatorsub.Scorel2()));
     }
 
   }
@@ -197,47 +195,12 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    return drivebase.getAutonomousCommand("Standard Start");
   }
 
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
   }
-
-  
-  // public void getCoralScoreLEFTpose()
-  // {
-  //   double heading = drivebase.getHeading().getDegrees();
-  //     Pose2d CoralScorePoseLEFT;
-  //     if (heading >= 30 && heading < 90) {
-  //       CoralScorePoseLEFT = new Pose2d(3.668, 2.916, Rotation2d.fromDegrees(60));
-  //       System.out.println("60");
-  //     } else if (heading >= 90 && heading < 150) {
-  //       CoralScorePoseLEFT = new Pose2d(5.035, 2.772, Rotation2d.fromDegrees(120));
-  //       System.out.println("120");
-  //     } else if (heading >= 150 && heading < 210) {
-  //       CoralScorePoseLEFT = new Pose2d(5.826, 3.875, Rotation2d.fromDegrees(180));
-  //       System.out.println("180");
-  //     } else if (heading >= 210 && heading < 270) {
-  //       CoralScorePoseLEFT = new Pose2d(5.323, 5.122, Rotation2d.fromDegrees(240));
-  //       System.out.println("240");
-  //     } else if (heading >= 270 && heading < 330) {
-  //       CoralScorePoseLEFT = new Pose2d(3.944, 5.266, Rotation2d.fromDegrees(300));
-  //       System.out.println("300");
-  //     } else {
-  //       CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
-  //       System.out.println("0");
-          
-  //     }
-
-  //     if (drivebase.isRedAlliance()) {
-  //       CoralScorePoseLEFT = new Pose2d(
-  //       -CoralScorePoseLEFT.getX(),
-  //       -CoralScorePoseLEFT.getY(),
-  //       CoralScorePoseLEFT.getRotation().plus(Rotation2d.fromDegrees(180))
-  //       );
-  //     }
-  // }
 
 }

@@ -25,6 +25,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -284,60 +285,25 @@ public class SwerveSubsystem extends SubsystemBase
                                      );
   }
 
-  // public Pose2d CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
-  
-  // public void findLeftCoral(){
-  //   // find the pose of the left coral
-  //   double heading = getHeading().getDegrees();
-  //   Pose2d CoralScorePoseLEFT;
-  //   if (heading >= 30 && heading < 90) {
-  //     CoralScorePoseLEFT = new Pose2d(3.668, 2.916, Rotation2d.fromDegrees(60));
-  //     System.out.println("60");
-  //   } else if (heading >= 90 && heading < 150) {
-  //     CoralScorePoseLEFT = new Pose2d(5.035, 2.772, Rotation2d.fromDegrees(120));
-  //     System.out.println("120");
-  //   } else if (heading >= 150 && heading < 210) {
-  //     CoralScorePoseLEFT = new Pose2d(5.826, 3.875, Rotation2d.fromDegrees(180));
-  //     System.out.println("180");
-  //   } else if (heading >= 210 && heading < 270) {
-  //     CoralScorePoseLEFT = new Pose2d(5.323, 5.122, Rotation2d.fromDegrees(240));
-  //     System.out.println("240");
-  //   } else if (heading >= 270 && heading < 330) {
-  //     CoralScorePoseLEFT = new Pose2d(3.944, 5.266, Rotation2d.fromDegrees(300));
-  //     System.out.println("300");
-  //   } else {
-  //     CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
-  //     System.out.println("0");
-        
-  //   }
-
-  //   if (isRedAlliance()) {
-  //     CoralScorePoseLEFT = new Pose2d(
-  //     -CoralScorePoseLEFT.getX(),
-  //     -CoralScorePoseLEFT.getY(),
-  //     CoralScorePoseLEFT.getRotation().plus(Rotation2d.fromDegrees(180))
-  //     );
-  //   }
-
-  //   System.out.println(CoralScorePoseLEFT);
-  //   System.out.println(getHeading().getDegrees());
-  // }
-
   public void stopCoralpathing()
   {
+    // resetOdometry(getPose());
     PathConstraints constraints = new PathConstraints(
         swerveDrive.getMaximumChassisVelocity(), 4.0,
         swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
 
-    System.out.println("stoping");
+        swerveDrive.setGyroOffset(new Rotation3d(0, 0, 0));
+        System.out.println("stoping");
           AutoBuilder.pathfindToPose(
             AutoBuilder.getCurrentPose(),
             constraints,
             edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+            
   }
   
   public void driveToLeftCoral()
   {
+
     // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
         swerveDrive.getMaximumChassisVelocity(), 4.0,
@@ -345,9 +311,11 @@ public class SwerveSubsystem extends SubsystemBase
     
     
     double heading = getHeading().getDegrees();
-    
+    swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
+    // resetInverseOdometry(getPose());
     if (getHeading().getDegrees() < 0) {
-    heading = 360 + heading;
+    
+      heading = 360 + heading;
     }
     if (isRedAlliance()){
       if(heading < 180){
@@ -501,7 +469,8 @@ public class SwerveSubsystem extends SubsystemBase
     
     
     double heading = getHeading().getDegrees();
-    
+    swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
+    // resetInverseOdometry(getPose());
     if (getHeading().getDegrees() < 0) {
     heading = 360 + heading;
     }
@@ -895,6 +864,11 @@ public class SwerveSubsystem extends SubsystemBase
   public void resetOdometry(Pose2d initialHolonomicPose)
   {
     swerveDrive.resetOdometry(initialHolonomicPose);
+  }
+
+  public void resetInverseOdometry(Pose2d initialHolonomicPose)
+  {
+    swerveDrive.resetOdometry(initialHolonomicPose.rotateBy(new Rotation2d(180)));
   }
 
   /**

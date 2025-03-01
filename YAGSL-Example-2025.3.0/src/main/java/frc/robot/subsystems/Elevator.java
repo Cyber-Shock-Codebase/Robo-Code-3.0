@@ -213,7 +213,24 @@ public Elevator() {
 
   public boolean isCoralReady() {
     return isHoldingCoral() && !isCoralproblematic();
+    }
+
+  
+
+  public void Scorel2() {
+    elevatorCurrentTarget = ElevatorConstants.L2;
+    if (Math.abs(elevatorEncoder.getPosition() - ElevatorConstants.L2) < 1) {
+      System.out.println("Height");
+      setIntakePower(Shooter.IntakeSpeed);
+    }
+    if (!isHoldingCoral()) {
+      System.out.println("Done Shooting");
+      setIntakePower(0.0);
+      elevatorCurrentTarget = ElevatorConstants.downPos;
+      System.out.println("Down");
+    };
   }
+  
 
   // public boolean iselevatorfree() {
   //   return !TopLimitSwitch.get() && !BottomLimitSwitch.get();
