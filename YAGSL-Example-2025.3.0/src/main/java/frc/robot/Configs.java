@@ -11,6 +11,7 @@ public final class Configs {
     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
     public static final SparkMaxConfig elevatorConfig = new SparkMaxConfig();
     public static final SparkMaxConfig intakeConfig = new SparkMaxConfig();
+    public static final SparkMaxConfig StickConfig = new SparkMaxConfig();
 
     static {
       // // Configure basic settings of the arm motor
@@ -40,10 +41,11 @@ public final class Configs {
        * will prevent any actuation of the elevator in the reverse direction if the limit switch is
        * pressed.
        */
-      elevatorConfig
-          .limitSwitch
-          .reverseLimitSwitchEnabled(true)
-          .reverseLimitSwitchType(Type.kNormallyOpen);
+      
+      //  elevatorConfig
+      //     .limitSwitch
+      //     .reverseLimitSwitchEnabled(true)
+      //     .reverseLimitSwitchType(Type.kNormallyOpen);
 
       /*
        * Configure the closed loop controller. We want to make sure we set the
@@ -65,12 +67,24 @@ public final class Configs {
       // Configure basic settings of the intake motor
       intakeConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).voltageCompensation(12);
       intakeConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(0.01)
+        .d(0)
+        .outputRange(-1, 1)
+        .maxMotion.maxVelocity(4200)
+        .maxAcceleration(6000)
+        .allowedClosedLoopError(0.5);
+
+      StickConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).voltageCompensation(12);
+      StickConfig
         .closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(0.01)
-        .d(.001)
+        .d(0)
         .outputRange(-1, 1)
-        .maxMotion.maxVelocity(6000)
-        .maxAcceleration(1000)
+        .maxMotion
+        .maxVelocity(6000)
+        .maxAcceleration(6000)
         .allowedClosedLoopError(0.5);
     }
   }

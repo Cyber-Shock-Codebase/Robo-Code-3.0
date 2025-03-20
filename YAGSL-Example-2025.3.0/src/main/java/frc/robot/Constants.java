@@ -19,10 +19,10 @@ import swervelib.math.Matter;
 public final class Constants
 {
 
-  public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+  public static final double ROBOT_MASS = (80 + 10) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
-  public static final double MAX_SPEED  = Units.feetToMeters(14.5);
+  public static final double MAX_SPEED  = 4;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
 //  public static final class AutonConstants
@@ -58,6 +58,7 @@ public final class Constants
     public static final int leftElevatorID = 21;
     public static final int limitSwitchPort = 0;
     // public static final int toplimitSwitchPort = 1;
+    public static final int StickmotorID = 20;
 
    //countsper inch = (360 * gear ratio)/(diamiter of sprocket * pi) 
     public static final double countsPerInch = (360 * 10 )/(2* 3.14159265359);
@@ -94,8 +95,13 @@ public final class Constants
     public static final int ForBeamID = 3;
     public static final int BackBeamID = 4;
 
-    public static final double IntakeSpeed = -0.23;
+    public static final double IntakeSpeed = -0.12;
     public static final double ReverseSpeed = 0.2;
+    public static final double StickSpeed = 0.5;
+
+    public static final double IntakeControledspeed = -100;
+    public static final double ReverseControledspeed = 100;
+    public static final double StickControledspeed = 100;
     
     public static final double IndexSpeed = 20;
     public static final double L1Speed = .5;

@@ -168,7 +168,7 @@ public class SwerveSubsystem extends SubsystemBase
     {
       config = RobotConfig.fromGUISettings();
 
-      final boolean enableFeedforward = true;
+      final boolean enableFeedforward = false;
       // Configure AutoBuilder last
       AutoBuilder.configure(
           this::getPose,
@@ -187,13 +187,19 @@ public class SwerveSubsystem extends SubsystemBase
                                );
             } else
             {
-              swerveDrive.setChassisSpeeds(speedsRobotRelative);
+              swerveDrive.setChassisSpeeds(
+                new ChassisSpeeds(
+                speedsRobotRelative.vxMetersPerSecond,
+                speedsRobotRelative.vyMetersPerSecond,
+                speedsRobotRelative.omegaRadiansPerSecond
+                )
+              );
             }
           },
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
           new PPHolonomicDriveController(
               // PPHolonomicController is the built in path following controller for holonomic drive trains
-              new PIDConstants(5.0, 0.0, 0.0),
+              new PIDConstants(1.0, 0.0, 0.0),
               // Translation PID constants
               new PIDConstants(5.0, 0.0, 0.0)
               // Rotation PID constants
@@ -872,6 +878,15 @@ public class SwerveSubsystem extends SubsystemBase
   public void drive(ChassisSpeeds velocity)
   {
     swerveDrive.drive(velocity);
+  }
+
+  public Command driveForAuton() {
+    return run(() -> drive(new ChassisSpeeds(-1, 0, 0)));
+  }
+
+  public Command drivedistanceForAuton(Pose2d pose, Double time) {
+    // return run(() -> drive(new ChassisSpeeds(pose.getX()/time, pose.getY()/time, pose.getRotation().getRadians()/time)));
+    return run(() -> driveFieldOriented(new ChassisSpeeds(pose.getX()/time, pose.getY()/time, pose.getRotation().getRadians()/time)));
   }
 
 

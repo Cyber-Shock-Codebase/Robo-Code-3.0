@@ -36,6 +36,11 @@
           "open": false
         }
       }
+    },
+    "Timing": {
+      "window": {
+        "visible": false
+      }
     }
   },
   "NTProvider": {
@@ -48,6 +53,7 @@
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
       "/SmartDashboard/Motors": "Alerts",
+      "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/Swerve Drive": "Alerts",
       "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d"
     },

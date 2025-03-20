@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Rotation;
 
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -97,8 +99,6 @@ public class RobotContainer
                                                                                                                2))
                                                                                .headingWhile(true);
 
-  private Pose2d CoralScorePoseLEFT = new Pose2d(3.105, 4.175, Rotation2d.fromDegrees(0));
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -107,7 +107,7 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
-    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+    
   }
 
   /**
@@ -129,7 +129,14 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
-
+    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+    // NamedCommands.registerCommand("drive in auto", drivebase.driveForAuton());
+    NamedCommands.registerCommand("L2", elevatorsub.setSetpointCommandPP(Setpoint.kLevel2).until(elevatorsub.L2Trigger()));
+    NamedCommands.registerCommand("shoot", elevatorsub.runIntakeCommand().unless(elevatorsub.CoralTrigger()));
+    NamedCommands.registerCommand("L0", elevatorsub.setSetpointCommand(Setpoint.kFeederStation).until(elevatorsub.L0Trigger()));
+    NamedCommands.registerCommand("dealgea", elevatorsub.DeAlgea());
+    NamedCommands.registerCommand("Intake", elevatorsub.runIntakeCommand().until(elevatorsub.CoralTrigger()));
+    NamedCommands.registerCommand("LockDrive", Commands.runOnce(drivebase::lock, drivebase).repeatedly());
 
     if (RobotBase.isSimulation())
     {
@@ -184,6 +191,7 @@ public class RobotContainer
       // driverXbox.b().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
       // driverXbox.a().onTrue(Commands.runOnce(() -> drivebase.driveToRightCoral()));
       // driverXbox.a().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
+      driverXbox.a().whileTrue(elevatorsub.runstickCommand());
       
     }
 
@@ -197,7 +205,14 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    // return drivebase.getAutonomousCommand("1meter");
+    // return drivebase.driveForAuton();
+    return new WaitCommand(0.5).deadlineFor(drivebase.drivedistanceForAuton(new Pose2d(-0.17 , 0, Rotation2d.fromDegrees(0)), .25))
+    .andThen(new WaitCommand(2.9))
+    .andThen(Commands.runOnce(drivebase::lock, drivebase))
+    .andThen(new WaitCommand(1.5).deadlineFor(elevatorsub.setSetpointCommand(Setpoint.kLevel3)))
+    .andThen(new WaitCommand(1.5).deadlineFor(elevatorsub.runIntakeCommand()))
+    .andThen(elevatorsub.setSetpointCommand(Setpoint.kFeederStation));
   }
 
   public void setMotorBrake(boolean brake)

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static java.lang.Math.abs;
+
 import java.util.concurrent.locks.Condition;
 
 import com.pathplanner.lib.events.OneShotTriggerEvent;
@@ -64,11 +66,15 @@ public class Elevator extends SubsystemBase {
     private DigitalInput forbeam = new DigitalInput(Shooter.ForBeamID);
     private DigitalInput backbeam = new DigitalInput(Shooter.BackBeamID);
 
-  // Initialize intake SPARK. We will use open loop control for this so we don't need a closed loop
-  // controller like above.
+  // Initialize intake SPARK. We will use a closed loop controller like above.
   private SparkMax intakeMotor = new SparkMax(Shooter.LeftMotorId, MotorType.kBrushless);
   private SparkClosedLoopController IntakeClosedLoopController = intakeMotor.getClosedLoopController();
   private RelativeEncoder IntakeEncoder = intakeMotor.getEncoder();
+  
+  // Initialize stick SPARK. We will a closed loop controller like above.
+  private SparkMax StickMotor = new SparkMax(ElevatorConstants.StickmotorID, MotorType.kBrushless);
+  private SparkClosedLoopController StickClosedLoopController = StickMotor.getClosedLoopController();
+  private RelativeEncoder StickEncoder = StickMotor.getEncoder();
 
   // Member variables for subsystem state management
   private boolean wasResetByButton = false;
@@ -149,6 +155,11 @@ public Elevator() {
         Configs.CoralSubsystem.intakeConfig,
         ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
+    StickMotor.configure(
+        Configs.CoralSubsystem.intakeConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+  
 
     // Display mechanism2d
     SmartDashboard.putData("Coral Subsystem", m_mech2d);
@@ -237,6 +248,10 @@ public Elevator() {
     intakeMotor.set(power);
   }
 
+  private void setStickpower(double power) {
+     StickMotor.set(power);
+  }
+
   /**
    * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
    * positions for the given setpoint.
@@ -269,6 +284,48 @@ public Elevator() {
         });
   }
 
+  public Command setSetpointCommandPP(Setpoint setpoint) {
+    return this.runOnce(
+        () -> {
+          switch (setpoint) {
+            case kFeederStation:
+            //   armCurrentTarget = ArmSetpoints.kFeederStation;
+              elevatorCurrentTarget = ElevatorConstants.downPos;
+              if(ElevatorConstants.posTolerance >= abs(ElevatorConstants.downPos - elevatorEncoder.getPosition())){
+                break;
+              }
+              break;
+            case kLevel1:
+            //   armCurrentTarget = ArmSetpoints.kLevel1;
+              elevatorCurrentTarget = ElevatorConstants.L1;
+              if(ElevatorConstants.posTolerance >= abs(ElevatorConstants.L1 - elevatorEncoder.getPosition())){
+                break;
+              }
+              break;
+            case kLevel2:
+            //   armCurrentTarget = ArmSetpoints.kLevel2;
+              elevatorCurrentTarget = ElevatorConstants.L2;
+              if(ElevatorConstants.posTolerance >= abs(ElevatorConstants.L2 - elevatorEncoder.getPosition())){
+                break;
+              }
+            case kLevel3:
+            //   armCurrentTarget = ArmSetpoints.kLevel3;
+              elevatorCurrentTarget = ElevatorConstants.L3;
+              if(ElevatorConstants.posTolerance >= abs(ElevatorConstants.L3 - elevatorEncoder.getPosition())){
+                break;
+              }
+              break;
+            case kLevel4:
+            //   armCurrentTarget = ArmSetpoints.kLevel4;
+              elevatorCurrentTarget = ElevatorConstants.L4;
+              if(ElevatorConstants.posTolerance >= abs(ElevatorConstants.L4 - elevatorEncoder.getPosition())){
+                break;
+              }
+              break;
+          }
+        });
+  }
+
   /**
    * Command to run the intake motor. When the command is interrupted, e.g. the button is released or coral is in position,
    * the motor will stop.
@@ -276,10 +333,8 @@ public Elevator() {
   public Command runIntakeCommand() {
     return this.startEnd(
         () -> this.setIntakePower(Shooter.IntakeSpeed), () -> this.setIntakePower(0.0));
-  }
-  
-  public Trigger CoralTrigger() {
-    return new Trigger(this::isCoralReady);
+        // () -> IntakeClosedLoopController.setReference(Shooter.IntakeControledspeed, ControlType.kMAXMotionVelocityControl),
+        // () -> IntakeClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
   }
 
   /**
@@ -289,6 +344,38 @@ public Elevator() {
   public Command reverseIntakeCommand() {
     return this.startEnd(
         () -> this.setIntakePower(Shooter.ReverseSpeed), () -> this.setIntakePower(0.0));
+        // () -> IntakeClosedLoopController.setReference(Shooter.ReverseControledspeed, ControlType.kMAXMotionVelocityControl),
+        // () -> IntakeClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
+        
+
+  }
+
+  public Command runstickCommand() {
+    return this.startEnd(
+        () -> this.setStickpower(Shooter.StickSpeed), () -> this.setStickpower(0.0));
+        // () -> StickClosedLoopController.setReference(Shooter.StickControledspeed, ControlType.kMAXMotionVelocityControl),
+        // () -> StickClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
+  }
+  
+  public Trigger CoralTrigger() {
+    return new Trigger(this::isCoralReady);
+  }
+
+  public Trigger L2Trigger() {
+    return new Trigger(() -> ElevatorConstants.posTolerance >= abs(ElevatorConstants.L2 - elevatorEncoder.getPosition()));
+  }
+
+  public Trigger L0Trigger() {
+    return new Trigger(() -> ElevatorConstants.posTolerance >= abs(ElevatorConstants.downPos - elevatorEncoder.getPosition()));
+  }
+
+  public Command DeAlgea() {
+    return this.runOnce(
+        () -> {
+          if(isCoralReady()){
+            elevatorCurrentTarget = ElevatorConstants.L2;
+          }
+        });
   }
 
   @Override
