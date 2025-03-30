@@ -30,7 +30,7 @@ public class PhysicalPropertiesJson
   /**
    * Robot mass in lb (pounds)
    */
-  public double                robotMass                      = 90;
+  public double                robotMass                      = 110.2311;
   /**
    * Conversion Factors composition. Auto-calculates the conversion factors.
    */
@@ -63,11 +63,12 @@ public class PhysicalPropertiesJson
     if (conversionFactor.drive != 0 && conversionFactor.angle != 0 && conversionFactors.isDriveEmpty() &&
         conversionFactors.isAngleEmpty())
     {
-      throw new RuntimeException(
+      new Alert("Configuration",
                 "\n'conversionFactor': {'drive': " + conversionFactor.drive + ", 'angle': " + conversionFactor.angle +
                 "} \nis deprecated, please use\n" +
                 "'conversionFactors': {'drive': {'factor': " + conversionFactor.drive + "}, 'angle': {'factor': " +
-                conversionFactor.angle + "} }");
+                conversionFactor.angle + "} }",
+                AlertType.kError).set(true);
     }
 
     return new SwerveModulePhysicalCharacteristics(

@@ -34,15 +34,6 @@ public class ThriftyNovaEncoderSwerve extends SwerveAbsoluteEncoder
     motor.setAbsoluteEncoder(null);
   }
 
-  @Override
-  public void close()
-  {
-    // ThriftyNova encoder gets closed with the motor
-    // I don't think an encoder getting closed should 
-    // close the entire motor so i will keep this empty
-    // sparkFlex.close();
-  }
-
   /**
    * Set factory default.
    */

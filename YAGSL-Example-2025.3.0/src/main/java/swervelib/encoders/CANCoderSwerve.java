@@ -112,12 +112,6 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
         AlertType.kWarning);
   }
 
-  @Override
-  public void close()
-  {
-    encoder.close();
-  }
-
   /**
    * Reset the encoder to factory defaults.
    */

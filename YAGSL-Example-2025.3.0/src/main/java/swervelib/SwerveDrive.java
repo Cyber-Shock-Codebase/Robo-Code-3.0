@@ -71,7 +71,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 /**
  * Swerve Drive class representing and controlling the swerve drive.
  */
-public class SwerveDrive implements AutoCloseable
+public class SwerveDrive
 {
 
   /**
@@ -272,6 +272,7 @@ public class SwerveDrive implements AutoCloseable
 
       // register the drivetrain simulation
       SimulatedArena.getInstance().addDriveTrainSimulation(mapleSimDrive);
+
       simIMU = new SwerveIMUSimulation(mapleSimDrive.getGyroSimulation());
       imuReadingCache = new Cache<>(simIMU::getGyroRotation3d, 5L);
     } else
@@ -288,11 +289,8 @@ public class SwerveDrive implements AutoCloseable
             getYaw(),
             getModulePositions(),
             startingPose); // x,y,heading in radians; Vision measurement std dev, higher=less weight
-//
-//    Rotation3d currentGyro = imuReadingCache.getValue();
-//    double offset = currentGyro.getZ() +
-//                    startingPose.getRotation().getRadians();
-//    setGyroOffset(new Rotation3d(currentGyro.getX(), currentGyro.getY(), offset));
+
+    zeroGyro();
 
     // Initialize Telemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())
@@ -334,18 +332,6 @@ public class SwerveDrive implements AutoCloseable
     checkIfTunerXCompatible();
 
     HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
-  }
-
-  @Override
-  public void close()
-  {
-    imu.close();
-    tunerXRecommendation.close();
-
-    for (var module : swerveModules)
-    {
-      module.close();
-    }
   }
 
   /**
@@ -397,10 +383,7 @@ public class SwerveDrive implements AutoCloseable
   public void setOdometryPeriod(double period)
   {
     odometryThread.stop();
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      SimulatedArena.overrideSimulationTimings(Seconds.of(period), 1);
-    }
+    SimulatedArena.overrideSimulationTimings(Seconds.of(period), 1);
     odometryThread.startPeriodic(period);
   }
 
@@ -410,10 +393,7 @@ public class SwerveDrive implements AutoCloseable
   public void stopOdometryThread()
   {
     odometryThread.stop();
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      SimulatedArena.overrideSimulationTimings(Seconds.of(TimedRobot.kDefaultPeriod), 5);
-    }
+    SimulatedArena.overrideSimulationTimings(Seconds.of(TimedRobot.kDefaultPeriod), 5);
   }
 
   /**
@@ -786,9 +766,6 @@ public class SwerveDrive implements AutoCloseable
     }
     for (SwerveModule module : swerveModules)
     {
-      module.applyStateOptimizations(states[module.moduleNumber]);
-      module.applyAntiJitter(states[module.moduleNumber], false);
-
       // from the module configuration, obtain necessary information to calculate feed-forward
       // Warning: Will not work well if motor is not what we are expecting.
       // Warning: Should replace module.getDriveMotor().simMotor with expected motor type first.
@@ -908,7 +885,7 @@ public class SwerveDrive implements AutoCloseable
    * method. However, if either gyro angle or module position is reset, this must be called in order for odometry to
    * keep working.
    *
-   * @param pose The pose to set the odometry to. Field relative, blue-origin where 0deg is facing towards RED alliance.
+   * @param pose The pose to set the odometry to
    */
   public void resetOdometry(Pose2d pose)
   {
@@ -997,7 +974,7 @@ public class SwerveDrive implements AutoCloseable
   }
 
   /**
-   * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0 (red alliance station).
+   * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.
    */
   public void zeroGyro()
   {
@@ -1397,33 +1374,9 @@ public class SwerveDrive implements AutoCloseable
   }
 
   /**
-   * Set the motor controller closed loop feedback device to the defined external absolute encoder, with the given
-   * offset from the supplied configuration, overwriting any native offset.
-   */
-  public void useExternalFeedbackSensor()
-  {
-    for (SwerveModule module : swerveModules)
-    {
-      module.useExternalFeedbackSensor();
-    }
-  }
-
-  /**
-   * Set the motor controller closed loop feedback device to the internal encoder instead of the absolute encoder.
-   */
-  public void useInternalFeedbackSensor()
-  {
-    for (SwerveModule module : swerveModules)
-    {
-      module.useInternalFeedbackSensor();
-    }
-  }
-
-  /**
    * Pushes the Absolute Encoder offsets to the Encoder or Motor Controller, depending on type. Also removes the
    * internal offsets to prevent double offsetting.
    */
-  @Deprecated
   public void pushOffsetsToEncoders()
   {
     for (SwerveModule module : swerveModules)
@@ -1435,7 +1388,6 @@ public class SwerveDrive implements AutoCloseable
   /**
    * Restores Internal YAGSL Encoder offsets and sets the Encoder stored offset back to 0
    */
-  @Deprecated
   public void restoreInternalOffset()
   {
     for (SwerveModule module : swerveModules)

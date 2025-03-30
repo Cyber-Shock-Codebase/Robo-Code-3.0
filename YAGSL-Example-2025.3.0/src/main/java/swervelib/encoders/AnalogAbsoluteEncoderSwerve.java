@@ -47,12 +47,6 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
         AlertType.kWarning);
   }
 
-  @Override
-  public void close()
-  {
-    encoder.close();
-  }
-
   /**
    * Construct the Encoder given the analog input channel.
    *

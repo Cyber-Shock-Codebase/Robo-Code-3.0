@@ -105,16 +105,6 @@ public class ThriftyNovaSwerve extends SwerveMotor
     this(new ThriftyNova(id), isDriveMotor, motor);
   }
 
-  @Override
-  public void close() {
-    try {
-    motor.close();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-
   /**
    * Set factory defaults on the motor controller.
    */
@@ -232,15 +222,6 @@ public class ThriftyNovaSwerve extends SwerveMotor
    */
   @Override
   public void configurePIDWrapping(double minInput, double maxInput)
-  {
-    // Do nothing
-  }
-
-  /**
-   * Disable PID Wrapping on the motor.
-   */
-  @Override
-  public void disablePIDWrapping()
   {
     // Do nothing
   }
@@ -435,7 +416,7 @@ public class ThriftyNovaSwerve extends SwerveMotor
    * @return connected absolute encoder state.
    */
   @Override
-  public boolean usingExternalFeedbackSensor()
+  public boolean isAttachedAbsoluteEncoder()
   {
     return EncoderType.ABS == encoderType;
   }

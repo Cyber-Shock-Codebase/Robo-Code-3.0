@@ -131,12 +131,6 @@ public class TalonFXSwerve extends SwerveMotor
     }
   }
 
-  @Override
-  public void close() {
-    motor.close();
-  }
-
-
   /**
    * Clear the sticky faults on the motor controller.
    */
@@ -224,17 +218,6 @@ public class TalonFXSwerve extends SwerveMotor
   {
     cfg.refresh(configuration.ClosedLoopGeneral);
     configuration.ClosedLoopGeneral.ContinuousWrap = true;
-    cfg.apply(configuration.ClosedLoopGeneral);
-  }
-
-  /**
-   * Disable PID Wrapping on the motor.
-   */
-  @Override
-  public void disablePIDWrapping()
-  {
-    cfg.refresh(configuration.ClosedLoopGeneral);
-    configuration.ClosedLoopGeneral.ContinuousWrap = false;
     cfg.apply(configuration.ClosedLoopGeneral);
   }
 
@@ -459,7 +442,7 @@ public class TalonFXSwerve extends SwerveMotor
    * @return connected absolute encoder state.
    */
   @Override
-  public boolean usingExternalFeedbackSensor()
+  public boolean isAttachedAbsoluteEncoder()
   {
     return absoluteEncoder;
   }
