@@ -185,13 +185,16 @@ public class RobotContainer
       // Left Trigger -> Run intake in reverse
       driverXbox.leftTrigger(OperatorConstants.TRIGGER_DEADBAND).whileTrue(elevatorsub.reverseIntakeCommand());
       // Right Bumper -> force intake forwards
-      driverXbox.rightBumper().whileTrue(elevatorsub.runIntakeCommand());
+      driverXbox.rightBumper().whileTrue(elevatorsub.SHOOTCommand());
       // Left Bumper -> force intake backwards
       // driverXbox.b().onTrue(Commands.runOnce(() -> drivebase.driveToLeftCoral()));
       // driverXbox.b().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
       // driverXbox.a().onTrue(Commands.runOnce(() -> drivebase.driveToRightCoral()));
       // driverXbox.a().onFalse(Commands.runOnce(() -> drivebase.stopCoralpathing()));
-      driverXbox.a().whileTrue(elevatorsub.runstickCommand());
+      driverXbox.leftBumper().whileTrue(elevatorsub.runstickCommand());
+      driverXbox.b().whileTrue(Commands.runOnce(elevatorsub::sendstick));
+      driverXbox.b().onFalse(Commands.runOnce(elevatorsub::downstick));
+      driverXbox.a().onTrue(Commands.runOnce(elevatorsub::downelevatorCommand));
       
     }
 
@@ -207,9 +210,10 @@ public class RobotContainer
     // An example command will be run in autonomous
     // return drivebase.getAutonomousCommand("1meter");
     // return drivebase.driveForAuton();
-    return new WaitCommand(0.5).deadlineFor(drivebase.drivedistanceForAuton(new Pose2d(-0.17 , 0, Rotation2d.fromDegrees(0)), .25))
+    return new WaitCommand(0.5).deadlineFor(drivebase.drivedistanceForAuton(new Pose2d(-0.15 ,0, Rotation2d.fromDegrees(0)), .25))
+    .andThen(Commands.runOnce(elevatorsub::sendstick))
     .andThen(new WaitCommand(2.9))
-    .andThen(Commands.runOnce(drivebase::lock, drivebase))
+    .andThen(Commands.runOnce(drivebase::lock, drivebase)).raceWith(elevatorsub.runstickCommandDONTSTOP())
     .andThen(new WaitCommand(1.5).deadlineFor(elevatorsub.setSetpointCommand(Setpoint.kLevel3)))
     .andThen(new WaitCommand(1.5).deadlineFor(elevatorsub.runIntakeCommand()))
     .andThen(elevatorsub.setSetpointCommand(Setpoint.kFeederStation));

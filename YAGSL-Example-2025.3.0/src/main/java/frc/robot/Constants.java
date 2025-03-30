@@ -97,11 +97,15 @@ public final class Constants
 
     public static final double IntakeSpeed = -0.12;
     public static final double ReverseSpeed = 0.2;
-    public static final double StickSpeed = 0.5;
+    public static final double StickSpeed = 1;
+    public static final double SHOOTspeed = -.75;
+    public static final double stickautospeed= 0.25;
 
     public static final double IntakeControledspeed = -100;
     public static final double ReverseControledspeed = 100;
     public static final double StickControledspeed = 100;
+    public static final double SHOOTControledspeed = -1000;
+    
     
     public static final double IndexSpeed = 20;
     public static final double L1Speed = .5;

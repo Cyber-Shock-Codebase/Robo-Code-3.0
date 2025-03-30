@@ -880,8 +880,8 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.drive(velocity);
   }
 
-  public Command driveForAuton() {
-    return run(() -> drive(new ChassisSpeeds(-1, 0, 0)));
+  public Command driveForAuton(Pose2d pose, Double time) {
+    return run(() -> drive(new ChassisSpeeds(pose.getX()/time, 0, 0)));
   }
 
   public Command drivedistanceForAuton(Pose2d pose, Double time) {

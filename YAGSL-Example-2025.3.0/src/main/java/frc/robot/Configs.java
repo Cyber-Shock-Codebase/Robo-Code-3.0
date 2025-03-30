@@ -65,26 +65,28 @@ public final class Configs {
           .allowedClosedLoopError(0.5);
 
       // Configure basic settings of the intake motor
-      intakeConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).voltageCompensation(12);
+      intakeConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      StickConfig.encoder.inverted(false);
       intakeConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(0.01)
         .d(0)
         .outputRange(-1, 1)
-        .maxMotion.maxVelocity(4200)
-        .maxAcceleration(6000)
+        .maxMotion.maxVelocity(1000)
+        .maxAcceleration(60)
         .allowedClosedLoopError(0.5);
 
-      StickConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50).voltageCompensation(12);
+      StickConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      StickConfig.encoder.inverted(false);
       StickConfig
         .closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(0.01)
         .d(0)
         .outputRange(-1, 1)
         .maxMotion
-        .maxVelocity(6000)
-        .maxAcceleration(6000)
+        .maxVelocity(200)
+        .maxAcceleration(60)
         .allowedClosedLoopError(0.5);
     }
   }

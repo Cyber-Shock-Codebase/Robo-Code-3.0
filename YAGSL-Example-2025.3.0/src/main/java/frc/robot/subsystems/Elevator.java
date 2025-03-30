@@ -19,6 +19,8 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -83,6 +85,8 @@ public class Elevator extends SubsystemBase {
 //   private double armCurrentTarget = ArmSetpoints.kFeederStation;
   private double elevatorCurrentTarget = ElevatorConstants.downPos;
 
+  private Timer limitSwitchTimer;
+
   // Simulation setup and variables
   private DCMotor elevatorMotorModel = DCMotor.getNeoVortex(1);
   private SparkMaxSim elevatorMotorSim;
@@ -99,7 +103,7 @@ public class Elevator extends SubsystemBase {
           SimulationRobotConstants.kMinElevatorHeightMeters,
           0.0,
           0.0);
-
+  Servo exampleServo = new Servo(1);
   // private DCMotor armMotorModel = DCMotor.getNEO(1);
   // private SparkMaxSim armMotorSim;
 //   private final SingleJointedArmSim m_armSim =
@@ -172,6 +176,8 @@ public Elevator() {
     elevatorMotorSim = new SparkMaxSim(elevatorMotor, elevatorMotorModel);
     elevatorLimitSwitchSim = new SparkLimitSwitchSim(elevatorMotor, false);
     // armMotorSim = new SparkMaxSim(armMotor, armMotorModel);
+
+    limitSwitchTimer = new Timer();
   }
 
   /**
@@ -194,12 +200,32 @@ public Elevator() {
   /** Zero the elevator encoder when the limit switch is pressed. */
   private void zeroElevatorOnLimitSwitch() {
     if (!wasResetByLimit && BottomLimitSwitch.get()) {
+      // try {
+      //   wait(750);
+      // } catch (InterruptedException e) {
+      //   // TODO Auto-generated catch block
+      //   System.out.println("wait method has an error");
+      //   e.printStackTrace();
+      // }
+      limitSwitchTimer.reset();
+      limitSwitchTimer.start();
+      System.out.println("limit timer started");
+
+
       // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
       // prevent constant zeroing while pressed
-      elevatorEncoder.setPosition(ElevatorConstants.minPos);
+      
+      
       wasResetByLimit = true;
     } else if (!BottomLimitSwitch.get()) {
       wasResetByLimit = false;
+    }
+
+    if (BottomLimitSwitch.get() && limitSwitchTimer.isRunning() && limitSwitchTimer.get() > 1) {
+      elevatorEncoder.setPosition(ElevatorConstants.minPos);
+      System.out.println("bottomlimit");
+      limitSwitchTimer.reset();
+      limitSwitchTimer.stop();
     }
   }
 
@@ -334,7 +360,7 @@ public Elevator() {
     return this.startEnd(
         () -> this.setIntakePower(Shooter.IntakeSpeed), () -> this.setIntakePower(0.0));
         // () -> IntakeClosedLoopController.setReference(Shooter.IntakeControledspeed, ControlType.kMAXMotionVelocityControl),
-        // () -> IntakeClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
+        // () -> IntakeClosedLoopController.setReference(Shooter.IntakeControledspeed, ControlType.kMAXMotionVelocityControl));
   }
 
   /**
@@ -346,8 +372,14 @@ public Elevator() {
         () -> this.setIntakePower(Shooter.ReverseSpeed), () -> this.setIntakePower(0.0));
         // () -> IntakeClosedLoopController.setReference(Shooter.ReverseControledspeed, ControlType.kMAXMotionVelocityControl),
         // () -> IntakeClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
-        
 
+  }
+
+  public Command SHOOTCommand() {
+    return this.startEnd(
+        () -> this.setIntakePower(Shooter.SHOOTspeed), () -> this.setIntakePower(0.0));
+        // () -> IntakeClosedLoopController.setReference(Shooter.SHOOTControledspeed, ControlType.kMAXMotionVelocityControl),
+        // () -> IntakeClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
   }
 
   public Command runstickCommand() {
@@ -355,6 +387,29 @@ public Elevator() {
         () -> this.setStickpower(Shooter.StickSpeed), () -> this.setStickpower(0.0));
         // () -> StickClosedLoopController.setReference(Shooter.StickControledspeed, ControlType.kMAXMotionVelocityControl),
         // () -> StickClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
+  }
+  
+
+  public Command runstickCommandDONTSTOP() {
+    return this.run(
+        () -> this.setStickpower(Shooter.stickautospeed));
+        // () -> StickClosedLoopController.setReference(Shooter.StickControledspeed, ControlType.kMAXMotionVelocityControl),
+        // () -> StickClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
+  }
+
+  public void downelevatorCommand() {
+    elevatorEncoder.setPosition(elevatorEncoder.getPosition() + 5);
+        // () -> IntakeClosedLoopController.setReference(Shooter.ReverseControledspeed, ControlType.kMAXMotionVelocityControl),
+        // () -> IntakeClosedLoopController.setReference(0.0, ControlType.kMAXMotionVelocityControl));
+
+  }
+
+  public void sendstick(){
+    exampleServo.set(0);
+  }
+
+  public void downstick(){
+    exampleServo.set(1);
   }
   
   public Trigger CoralTrigger() {
